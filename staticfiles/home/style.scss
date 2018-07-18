@@ -5,9 +5,24 @@ $row-height: 42px;
 $min-height: 400px;
 $darkish-white: #efeded;
 
-* {
-  margin: auto;
-  padding: 0;
+@mixin border($style: none, $color: black, $width: 1px, $radius: 0px){
+  border: {
+    style: $style;
+    color: $color;
+    width: $width;
+    radius: $radius;
+  }
+}
+
+@mixin dimensions($width, $height: $width) {
+  width: $width;
+  height: $height;
+}
+
+@mixin textCenter($height) {
+  line-height: $height;
+  text-align: center;
+  vertical-align: middle;
 }
 
 .flash {
@@ -17,10 +32,14 @@ $darkish-white: #efeded;
   animation-duration: 0.5s;
 }
 
-body {    
+%noGap {
   margin: 0;
   padding: 0;
-  background-color: $raging-red;
+}
+
+body {
+  @extend %noGap;
+  background-color: #ea6359;
 }
 
 h1.heading {
@@ -40,103 +59,89 @@ h1.heading {
   padding-top: 10px;
 }
 
-.content {
+.notebook {
+  @include border(none, black, 1px, 10px);
   margin: 4% auto 4% auto;
   width: 50%;
   max-width: 75%;
   min-height: 150px;
   color: white;
   background-color: $darkish-white;
-  border: {
-    radius: 10px;
-  }
   padding: 20px;
+  display: flex;
 }
 
-.notebook {
-  width: 100%;
+.dates {
+  @extend %noGap;
   min-height: $min-height;
   background-color: $darkish-white;
-  border-radius: 10px;
-  padding: 20px;
-  margin: auto;
-  padding: 0;
+  flex-grow: 1;
 }
 
-.col-3, .col-9 {
+.roles {
+  flex-grow: 3;
+}
+
+.navbar {
+  height: $row_height;
+  @include textCenter($row-height);
+  @extend %noGap;
+  background-color: #b74d10;
+  color: white;
+  overflow: hidden;
+  box-shadow: 0 2px 4px $half-black;
+  font: {
+    family: Poppins;
+    size: 20px;
+    weight: 300;
+  }
+}
+
+.info:nth-child(n) {
+  @extend %noGap;
+  @include textCenter($row_height);
   min-height: $min-height;
-  padding: 0;
-  border-radius: 10px !important;
   overflow: hidden;
   font: {
     family: Poppins;
     size: 22px;
   }
   box-shadow: 0px 4px 5px $half-black;
+  color: black;
+  margin-bottom: 2px;
+  height: $row-height;
+  background-color: #ffe8db;
+  position: relative;
 }
 
-.col-9 {
-  padding: 0 0 0 2px;
-}
-
-.navbar {
-  padding: 0;
-  width: 100%;
-  height: 42px;
-  background-color: #d1c00a;
-  color: white;
-  text-align: center;
-  line-height: $row-height;
-  vertical-align: center;
-  overflow: hidden;
-  box-shadow: 0 2px 4px $half-black;
-}
-
-.navbar .row {
-  margin: 0;
-  height: 100%;
-}
-
-a, a:hover, a:focus {
-  text-decoration: none;
-  color: white;
-  &:hover, &:focus {
-    background-color: #dbdb0f;
-    font-weight: bold;
-  }
-  height: 100%;
-}
-
-.selected {
+%focused {
   background-color: #dbdb0f;
   font-weight: bold;
 }
 
-.element {
-  color: black;
-  margin-bottom: 2px;
-  height: $row-height;
-  background-color: #fff693;
-  text-align: center;
-  line-height: $row-height;
-  vertical-align: middle;
+a {
+  text-decoration: none;
+  color: white;
+  height: 100%;
+  &:hover, &:focus {
+    @extend %focused;
+  }
 }
 
-input {
-  width: 90%;
-  height: 90%;
+.selected {
+  @extend %focused;
+}
+
+//textfields for entries into scheduler
+input.editField {
+  @include border(solid, black, 2px, 5px);
   background-color: transparent;
   &:focus {
     outline: none;
   }
-  border: {
-    style: solid;
-    radius: 5px;
-    width: 1px;
-  }
   font: {
-    family: Poppins; 
-    size: 20px; 
+    family: Poppins;
+    size: 20px;
     weight: 300;
   }
   text-align: center;

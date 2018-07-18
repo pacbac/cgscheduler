@@ -3,26 +3,12 @@ var nextMeet = new Date();
 var numRows = 0;
 var selected = "place";
 
-var roles = {
-  "place" : ["Robert", "Daniel", "Pak", "Scott"],
-  "children": ["Sharon", "Doris", "Joe", "Daniel", "Vincent", "Fion", "Florin"],
-  "youth" : ["Pak", "Robert", "Gary", "Scott", "Lai Lee"],
-  "moderator" : ["Vincent", "Gary", "Fion", "Pak", "Joe", "Florin", "Daniel", "Scott"]
-}
-var exceptionsStr = "";
-var exceptions;
-/*
-Each exception follows the same format:
-var exception = function()
-*/
-
 $(document).ready(function(){
   var rowMargin = 2;
   var rowHeight = $(".navbar").height()+rowMargin;
-  numRows = Math.floor(($(".notebook").height()-$(".navbar").height())/rowHeight);
-  for(let i = 0; i < numRows; i++){
+  numRows = Math.floor(($(".dates").height()-$(".navbar").height())/rowHeight);
+  for(let i = 0; i < numRows; i++)
     $(".info").append("<div  class='element element"+(i+1)+"'></div>");
-  }
 
   $(".navbar .col").on("click", function(){
     switch(this.id){
@@ -32,15 +18,33 @@ $(document).ready(function(){
       case "children": loadRole("children"); break;
     }
   });
-  dispData();
+  loadDates();
+
+  var toggleTextField = function() {
+    if($(this).children("input").hasClass("editField")) return
+    else if($(".element").has(".editField").length){
+      let date = $(".editField").val()
+      $(".editField").parent().html(date)
+    }
+    let date = $(this).text()
+    $(this).html("<input type='text' class='editField'>")
+    $(".editField").val(date)
+  }
+  $(document).on("click", ".element", toggleTextField)
+  $(document).on("keypress", ".element", (e) => {
+    if(e.which == 13){
+      let date = $(".editField").val()
+      $(".editField").parent().html(date)
+    }
+  })
 });
 
-function dispData(){
-  loadDates();
-}
-
 function loadDates(){
-  function getSaturday(year, month, day){
+  const thisYr = today.getFullYear(),
+      thisMonth = today.getMonth(),
+      thisDate = today.getDate();
+
+  var getSaturday = (year, month, day) => {
     var date = new Date(year, month, day, 0, 0, 0, 0);
     if(day <= 14)
       date.setDate(14-date.getDay());
@@ -49,15 +53,19 @@ function loadDates(){
     return date;
   };
 
-  for(let i = 0, monthInd = 0; i < numRows, monthInd < Math.floor(numRows/2); i+=2, monthInd++){
-    var addThisDate = getSaturday(today.getFullYear(), today.getMonth()+monthInd, 1);
-    $("#date .element"+(i+1)).text((addThisDate.getMonth()+1)+"/"+addThisDate.getDate()+"/"+addThisDate.getFullYear());
-    if(addThisDate.getMonth() == today.getMonth() && addThisDate.getDate() >= today.getDate())
-      $(".element"+(i+1)).addClass("upcoming");
+  var processDays = (addThisDate, j) => {
+    let addMonth = addThisDate.getMonth(),
+        addDate = addThisDate.getDate(),
+        addYr = addThisDate.getFullYear()
+    $(`.dates .element${j}`).text(`${addMonth+1}/${addDate}/${addYr}`);
+    if(addMonth == thisMonth && addDate >= thisDate)
+      $(`.dates .element${j}`).addClass("upcoming");
+  }
 
-    addThisDate = getSaturday(today.getFullYear(), today.getMonth()+monthInd, 15);
-    $("#date .element"+(i+2)).text((addThisDate.getMonth()+1)+"/"+addThisDate.getDate()+"/"+addThisDate.getFullYear());
-    if(addThisDate.getMonth() == today.getMonth() && addThisDate.getDate() >= today.getDate())
-      $(".element"+(i+2)).addClass("upcoming");
+  for(let i = 0, monthInd = 0; i < numRows, monthInd < Math.floor(numRows/2); i+=2, monthInd++){
+    let addThisDate = getSaturday(thisYr, thisMonth+monthInd, 1);
+    processDays(addThisDate, i+1)
+    addThisDate = getSaturday(thisYr, thisMonth+monthInd, 15);
+    processDays(addThisDate, i+2)
   }
 }

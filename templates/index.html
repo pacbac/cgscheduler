@@ -7,35 +7,27 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Hind:300,400" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400" rel="stylesheet">
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
     <link rel="stylesheet" type="text/css" href='{% static "home/css/style.css" %}'>
     <script src='{% static "home/app.js" %}'></script>
   </head>
   <body>
-    <div class="container-fluid">
-      <h1 class="heading">Cell Group Schedule</h1>
-      <div class="content">
-        <div class="row notebook">
-          <div class="col-3">
-            <div class="navbar">Date</div>
-            <div id="date" class="info"></div>
-          </div>
-          <div class="col-9">
-            <div class="navbar">
-              <div class="row">
-                <a href="#"><div id="place" class="col">Place</div></a>
-                <a href="#"><div id="moderator" class="col">Moderator</div></a>
-                <a href="#"><div id="topic" class="col">Topic</div></a>
-                <a href="#"><div id="children" class="col">Children</div></a>
-                <a href="#"><div id="youth" class="col">Youth</div></a>
-                <a href="#"><div id="remarks" class="col">Remarks</div></a>
-              </div>
-            </div>
-            <div class="inner-content info"></div>
-          </div>
+    <h1 class="heading">Cell Group Schedule</h1>
+    <div class="notebook">
+      <div class="dates">
+        <div class="navbar">Date</div>
+        <div class="info"></div>
+      </div>
+      <div class="roles">
+        <div class="navbar">
+            <a href="#"><div id="place" class="col">Place</div></a>
+            <a href="#"><div id="moderator" class="col">Moderator</div></a>
+            <a href="#"><div id="topic" class="col">Topic</div></a>
+            <a href="#"><div id="children" class="col">Children</div></a>
+            <a href="#"><div id="youth" class="col">Youth</div></a>
+            <a href="#"><div id="remarks" class="col">Remarks</div></a>
         </div>
+        <div class="info"></div>
       </div>
     </div>
   </body>
