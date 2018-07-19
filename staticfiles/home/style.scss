@@ -1,29 +1,4 @@
-$raging-red: #ad2905;
-$light-red: #ffbfba;
-$half-black: rgba(0,0,0,0.5);
-$row-height: 42px;
-$min-height: 400px;
-$darkish-white: #efeded;
-
-@mixin border($style: none, $color: black, $width: 1px, $radius: 0px){
-  border: {
-    style: $style;
-    color: $color;
-    width: $width;
-    radius: $radius;
-  }
-}
-
-@mixin dimensions($width, $height: $width) {
-  width: $width;
-  height: $height;
-}
-
-@mixin textCenter($height) {
-  line-height: $height;
-  text-align: center;
-  vertical-align: middle;
-}
+@import 'abstracts';
 
 .flash {
   -webkit-animation-name: flash;
@@ -32,13 +7,13 @@ $darkish-white: #efeded;
   animation-duration: 0.5s;
 }
 
-%noGap {
-  margin: 0;
-  padding: 0;
+html {
+  z-index: -2;
 }
 
 body {
-  @extend %noGap;
+  margin: 0;
+  padding: 0;
   background-color: #ea6359;
 }
 
@@ -69,24 +44,26 @@ h1.heading {
   background-color: $darkish-white;
   padding: 20px;
   display: flex;
-}
 
-.dates {
-  @extend %noGap;
-  min-height: $min-height;
-  background-color: $darkish-white;
-  flex-grow: 1;
-}
+  .dates {
+    margin: 0;
+    padding: 0;
+    min-height: $min-height;
+    background-color: $darkish-white;
+    flex-grow: 1;
+  }
 
-.roles {
-  flex-grow: 3;
+  .roles {
+    flex-grow: 3;
+  }
 }
 
 .navbar {
   height: $row_height;
   @include textCenter($row-height);
-  @extend %noGap;
-  background-color: #b74d10;
+  margin: 0;
+  padding: 0;
+  background-color: $red-brown;
   color: white;
   overflow: hidden;
   box-shadow: 0 2px 4px $half-black;
@@ -95,12 +72,18 @@ h1.heading {
     size: 20px;
     weight: 300;
   }
+
+  .roles & {
+    display: flex;
+
+    :nth-child(n) {
+      flex-grow: 1;
+    }
+  }
 }
 
-.info:nth-child(n) {
-  @extend %noGap;
+.element {
   @include textCenter($row_height);
-  min-height: $min-height;
   overflow: hidden;
   font: {
     family: Poppins;
@@ -108,41 +91,53 @@ h1.heading {
   }
   box-shadow: 0px 4px 5px $half-black;
   color: black;
-  margin-bottom: 2px;
   height: $row-height;
   background-color: #ffe8db;
   position: relative;
-}
+  border-bottom: {
+    style: solid;
+    color: rgba($red-brown, 0.25);
+    width: 2px;
+  }
 
-%focused {
-  background-color: #dbdb0f;
-  font-weight: bold;
+  //textfields for entries into scheduler
+  input.editField {
+    @include border(solid, rgba($red_brown, 0.4), 2px, 5px);
+    background-color: transparent;
+    position: relative;
+    width: 90%;
+    &:focus {
+      outline: none;
+    }
+    font: {
+      family: Poppins;
+      size: 20px;
+      weight: 300;
+    }
+    text-align: center;
+  }
 }
 
 a {
   text-decoration: none;
   color: white;
   height: 100%;
-  &:hover, &:focus {
-    @extend %focused;
+  &:hover {
+    background-color: #d39a7c;
+    font-weight: bold;
   }
 }
 
 .selected {
-  @extend %focused;
+  background-color: #efae8d;
+  font-weight: bold;
 }
 
-//textfields for entries into scheduler
-input.editField {
-  @include border(solid, black, 2px, 5px);
-  background-color: transparent;
-  &:focus {
-    outline: none;
-  }
-  font: {
-    family: Poppins;
-    size: 20px;
-    weight: 300;
-  }
-  text-align: center;
+footer {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  font-family: Poppins;
+  z-index: -1;
+  color: white;
 }

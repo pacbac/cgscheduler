@@ -1,0 +1,27 @@
+$raging-red: #ad2905;
+$light-red: #ffbfba;
+$half-black: rgba(0,0,0,0.5);
+$row-height: 42px;
+$min-height: 400px;
+$darkish-white: #efeded;
+$red-brown: #b74d10;
+
+@mixin border($style: none, $color: black, $width: 1px, $radius: 0px){
+  border: {
+    style: $style;
+    color: $color;
+    width: $width;
+    radius: $radius;
+  }
+}
+
+@mixin dimensions($width, $height: $width) {
+  width: $width;
+  height: $height;
+}
+
+@mixin textCenter($height) {
+  line-height: $height;
+  text-align: center;
+  vertical-align: middle;
+}

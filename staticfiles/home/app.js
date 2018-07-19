@@ -1,23 +1,13 @@
 var today = new Date();
-var nextMeet = new Date();
 var numRows = 0;
-var selected = "place";
+const rowMargin = 2;
 
 $(document).ready(function(){
-  var rowMargin = 2;
   var rowHeight = $(".navbar").height()+rowMargin;
   numRows = Math.floor(($(".dates").height()-$(".navbar").height())/rowHeight);
   for(let i = 0; i < numRows; i++)
     $(".info").append("<div  class='element element"+(i+1)+"'></div>");
 
-  $(".navbar .col").on("click", function(){
-    switch(this.id){
-      case "place": loadRole("place"); break;
-      case "moderator": loadRole("moderator"); break;
-      case "youth": loadRole("youth"); break;
-      case "children": loadRole("children"); break;
-    }
-  });
   loadDates();
 
   var toggleTextField = function() {
@@ -31,11 +21,15 @@ $(document).ready(function(){
     $(".editField").val(date)
   }
   $(document).on("click", ".element", toggleTextField)
-  $(document).on("keypress", ".element", (e) => {
+  $(document).on("keypress", ".element", e => {
     if(e.which == 13){
       let date = $(".editField").val()
       $(".editField").parent().html(date)
     }
+  })
+  $(".navbar :nth-child(n)").click(function() {
+    $(".selected").removeClass("selected")
+    $(this).addClass("selected")
   })
 });
 
@@ -44,12 +38,16 @@ function loadDates(){
       thisMonth = today.getMonth(),
       thisDate = today.getDate();
 
-  var getSaturday = (year, month, day) => {
-    var date = new Date(year, month, day, 0, 0, 0, 0);
+  //calculate the next 2nd or 4th saturday, given a date
+  var getSaturday = date => {
+    let day = date.getDate(),
+        wkDay = date.getDay()
     if(day <= 14)
-      date.setDate(14-date.getDay());
+      date.setDate(14-wkDay);
     else if(day <= 28)
-      date.setDate(28-date.getDay());
+      date.setDate(28-wkDay);
+    else
+      date.setDate(42-wkDay);
     return date;
   };
 
@@ -63,9 +61,9 @@ function loadDates(){
   }
 
   for(let i = 0, monthInd = 0; i < numRows, monthInd < Math.floor(numRows/2); i+=2, monthInd++){
-    let addThisDate = getSaturday(thisYr, thisMonth+monthInd, 1);
+    let addThisDate = getSaturday(new Date(thisYr, thisMonth+monthInd, 1));
     processDays(addThisDate, i+1)
-    addThisDate = getSaturday(thisYr, thisMonth+monthInd, 15);
+    addThisDate = getSaturday(new Date(thisYr, thisMonth+monthInd, 15));
     processDays(addThisDate, i+2)
   }
 }
