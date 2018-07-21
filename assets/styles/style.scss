@@ -133,6 +133,34 @@ a {
   font-weight: bold;
 }
 
+button {
+  @include dimensions(80px, 40px);
+  margin-top: 20px;
+  margin-left: 10px;
+  float: right;
+  cursor: pointer;
+  font: {
+    family: Poppins;
+    size: 16px;
+  }
+  border: {
+    style: none;
+    radius: 3px;
+  }
+  color: white;
+  box-shadow: $half-black 1px 1px 3px;
+
+  &[name="save"] {
+    background-color: #9e4f3f;
+  }
+
+  &[name="cancel"] {
+    break-before: always;
+    background-color: #afafaf;
+  }
+  display: none;
+}
+
 footer {
   position: absolute;
   left: 5px;
