@@ -73,7 +73,23 @@ h1.heading {
     weight: 300;
   }
 
-  .roles & {
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+
+    > li > div {
+      color: white;
+      height: 100%;
+      cursor: pointer;
+      &:hover {
+        background-color: #d39a7c;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .roles & ul {
     display: flex;
 
     :nth-child(n) {
@@ -115,16 +131,6 @@ h1.heading {
       weight: 300;
     }
     text-align: center;
-  }
-}
-
-a {
-  text-decoration: none;
-  color: white;
-  height: 100%;
-  &:hover {
-    background-color: #d39a7c;
-    font-weight: bold;
   }
 }
 
