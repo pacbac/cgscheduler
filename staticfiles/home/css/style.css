@@ -60,9 +60,20 @@ h1.heading {
   font-family: Poppins;
   font-size: 20px;
   font-weight: 300; }
-  .roles .navbar {
+  .navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0; }
+    .navbar ul > li > div {
+      color: white;
+      height: 100%;
+      cursor: pointer; }
+      .navbar ul > li > div:hover {
+        background-color: #d39a7c;
+        font-weight: bold; }
+  .roles .navbar ul {
     display: flex; }
-    .roles .navbar :nth-child(n) {
+    .roles .navbar ul :nth-child(n) {
       flex-grow: 1; }
 
 .element {
@@ -94,14 +105,6 @@ h1.heading {
     text-align: center; }
     .element input.editField:focus {
       outline: none; }
-
-a {
-  text-decoration: none;
-  color: white;
-  height: 100%; }
-  a:hover {
-    background-color: #d39a7c;
-    font-weight: bold; }
 
 .selected {
   background-color: #efae8d;
