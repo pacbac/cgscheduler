@@ -14,25 +14,16 @@
   <body>
     <h1 class="heading">Cell Group Schedule</h1>
     <div class="notebook">
-      <div class="dates">
-        <div class="navbar">Date</div>
-        <div class="info"></div>
-      </div>
-      <div class="roles">
-        <div class="navbar">
-          <ul>
-            <li href="#"><div id="place" class="selected">Place</div></li>
-            <li href="#"><div id="moderator">Moderator</div></li>
-            <li href="#"><div id="topic">Topic</div></li>
-            <li href="#"><div id="children">Children</div></li>
-            <li href="#"><div id="youth">Youth</div></li>
-            <li href="#"><div id="remarks">Remarks</div></li>
-          </ul>
+      {% for category in categories %}
+        <div class="{% filter lower %}{{ category }}{% endfilter %}">
+          <div class="navbar">{{ category }}</div>
+          <div class="info"></div>
         </div>
-        <div class="info"></div>
-        <button type="submit" name="save">Save</button>
-        <button name="cancel">Cancel</button>
-      </div>
+      {% endfor %}
+    </div>
+    <div class="save-btns">
+      <button type="submit" name="save">Save</button>
+      <button name="cancel">Cancel</button>
     </div>
   </body>
   <footer>

@@ -4,7 +4,8 @@ $half-black: rgba(0,0,0,0.5);
 $row-height: 42px;
 $min-height: 400px;
 $darkish-white: #efeded;
-$red-brown: #b74d10;
+$dark-green: #027517;
+$light-green: #b0db90;
 
 @mixin border($style: none, $color: black, $width: 1px, $radius: 0px){
   border: {

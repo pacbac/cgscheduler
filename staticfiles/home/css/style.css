@@ -10,12 +10,12 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background-color: #ea6359; }
+  background-color: #b0db90; }
 
 h1.heading {
   font-family: Hind;
   font-weight: 300;
-  color: #ad2905;
+  color: #84af13;
   margin: auto;
   text-align: center;
   width: 400px;
@@ -30,21 +30,22 @@ h1.heading {
   border-width: 1px;
   border-radius: 10px;
   margin: 4% auto 4% auto;
-  width: 50%;
-  max-width: 75%;
+  width: 80%;
   min-height: 150px;
   color: white;
   background-color: #efeded;
   padding: 20px;
   display: flex; }
-  .notebook .dates {
+  .notebook > div {
     margin: 0;
     padding: 0;
     min-height: 400px;
     background-color: #efeded;
-    flex-grow: 1; }
-  .notebook .roles {
-    flex-grow: 3; }
+    flex-grow: 1;
+    flex-basis: 10%; }
+  .notebook > .topic {
+    flex-grow: 1;
+    flex-basis: 30%; }
 
 .navbar {
   height: 42px;
@@ -53,28 +54,13 @@ h1.heading {
   vertical-align: middle;
   margin: 0;
   padding: 0;
-  background-color: #b74d10;
+  background-color: #027517;
   color: white;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   font-family: Poppins;
   font-size: 20px;
   font-weight: 300; }
-  .navbar ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0; }
-    .navbar ul > li > div {
-      color: white;
-      height: 100%;
-      cursor: pointer; }
-      .navbar ul > li > div:hover {
-        background-color: #d39a7c;
-        font-weight: bold; }
-  .roles .navbar ul {
-    display: flex; }
-    .roles .navbar ul :nth-child(n) {
-      flex-grow: 1; }
 
 .element {
   line-height: 42px;
@@ -86,14 +72,14 @@ h1.heading {
   box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.5);
   color: black;
   height: 42px;
-  background-color: #ffe8db;
+  background-color: #eaffee;
   position: relative;
   border-bottom-style: solid;
-  border-bottom-color: rgba(183, 77, 16, 0.25);
+  border-bottom-color: rgba(2, 117, 23, 0.25);
   border-bottom-width: 2px; }
   .element input.editField {
     border-style: solid;
-    border-color: rgba(183, 77, 16, 0.4);
+    border-color: rgba(2, 117, 23, 0.4);
     border-width: 2px;
     border-radius: 5px;
     background-color: transparent;

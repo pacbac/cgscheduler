@@ -14,7 +14,7 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background-color: #ea6359;
+  background-color: $light-green;
 }
 
 h1.heading {
@@ -22,14 +22,14 @@ h1.heading {
     family: Hind;
     weight: 300;
   }
-  color: $raging-red;
+  color: #84af13;
   margin: auto;
   text-align: center;
   width: 400px;
   background-color: white;
-  border: {
-    bottom-left-radius: 20px;
-    bottom-right-radius: 20px;
+  border-bottom: {
+    left-radius: 20px;
+    right-radius: 20px;
   }
   padding-top: 10px;
 }
@@ -37,24 +37,25 @@ h1.heading {
 .notebook {
   @include border(none, black, 1px, 10px);
   margin: 4% auto 4% auto;
-  width: 50%;
-  max-width: 75%;
+  width: 80%;
   min-height: 150px;
   color: white;
   background-color: $darkish-white;
   padding: 20px;
   display: flex;
 
-  .dates {
+  > div {
     margin: 0;
     padding: 0;
     min-height: $min-height;
     background-color: $darkish-white;
     flex-grow: 1;
+    flex-basis: 10%;
   }
 
-  .roles {
-    flex-grow: 3;
+  > .topic {
+    flex-grow: 1;
+    flex-basis: 30%;
   }
 }
 
@@ -63,7 +64,7 @@ h1.heading {
   @include textCenter($row-height);
   margin: 0;
   padding: 0;
-  background-color: $red-brown;
+  background-color: $dark-green;
   color: white;
   overflow: hidden;
   box-shadow: 0 2px 4px $half-black;
@@ -71,30 +72,6 @@ h1.heading {
     family: Poppins;
     size: 20px;
     weight: 300;
-  }
-
-  ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-
-    > li > div {
-      color: white;
-      height: 100%;
-      cursor: pointer;
-      &:hover {
-        background-color: #d39a7c;
-        font-weight: bold;
-      }
-    }
-  }
-
-  .roles & ul {
-    display: flex;
-
-    :nth-child(n) {
-      flex-grow: 1;
-    }
   }
 }
 
@@ -108,17 +85,17 @@ h1.heading {
   box-shadow: 0px 4px 5px $half-black;
   color: black;
   height: $row-height;
-  background-color: #ffe8db;
+  background-color: #eaffee;
   position: relative;
   border-bottom: {
     style: solid;
-    color: rgba($red-brown, 0.25);
+    color: rgba($dark-green, 0.25);
     width: 2px;
   }
 
   //textfields for entries into scheduler
   input.editField {
-    @include border(solid, rgba($red_brown, 0.4), 2px, 5px);
+    @include border(solid, rgba($dark-green, 0.4), 2px, 5px);
     background-color: transparent;
     position: relative;
     width: 90%;
