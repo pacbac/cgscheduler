@@ -20,10 +20,20 @@
           <div class="info"></div>
         </div>
       {% endfor %}
-    </div>
-    <div class="save-btns">
-      <button type="submit" name="save">Save</button>
-      <button name="cancel">Cancel</button>
+      <div class="save-btns">
+        <button name="edit-entries-pool">Edit Entries Pool</button>
+        <button type="submit" name="save">Save</button>
+        <button name="cancel">Cancel</button>
+      </div>
+      <div class="entries-pool">
+        {% for entry in entries %}
+          <div class="{% filter lower %}{{ entry }}{% endfilter %}-entries">
+            <h3>{{ entry }}</h3>
+            <div class="entries"></div>
+            <!-- <textarea class="entries-area"></textarea> -->
+          </div>
+        {% endfor %}
+      </div>
     </div>
   </body>
   <footer>

@@ -1,11 +1,16 @@
 var today = new Date();
 var numRows = 0;
 const rowMargin = 2;
-const initialSelected = 'place' //category initially selected when page loaded
-//so if editing is discarded, this will put the last saved entry back into place
 var edits = {}; //list of edits to be sent to server
 var dates = []; //list of dates on scheduler
+var categories = ['newDate', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks']
+var entries = {
+  place: [],
+  children: [],
+  youth: []
+}
 
+//override toString for convenient use
 Date.prototype.toString = function() {
   return `${this.getMonth()+1}/${this.getDate()}/${this.getFullYear()}`
 }
@@ -21,72 +26,83 @@ $(document).ready(function(){
   loadDates();
   loadListeners();
 
-  dates.forEach((date, i) => {
-    if(date in edits) {
-      if('newDate' in edits[date])
-        $(`.dates .element${i+1}`).text(edits[date]['newDate'])
-      if(initialSelected in edits[date])
-        $(`.roles .element${i+1}`).text(edits[date][initialSelected]) //place is loaded by default
-    }
+  //populate the table with previously saved edits
+  categories.forEach(category => {
+    let datesWEdit = dates.filter(date => date in edits && category in edits[date])
+    datesWEdit.forEach((date, i) => $(`.dates .element${i+1}`).text(edits[date][category]))
   })
 });
 
 function loadListeners() {
-  //toggle text field on clicked element
-  $(document).on("click", ".element", function() {
-    if($(this).children("input").hasClass("editField")) return; //no need to retoggle same element clicked on
-    else if($(".element").has(".editField").length){ //if editField already exists
-      let val = $(".editField").val()
-      $(".editField").parent().html(val)
+  /*
+    toggle text field on manual text entry elements
+    the arrow MUST ALWAYS be there or else grandchildren+ will have unexpected behavior!
+  */
+  $(".notebook > div:not(.youth):not(.children):not(.place) .element").click(function() {
+    if($(this).children("input").hasClass("edit-field")) return; //no need to retoggle same element clicked on
+    else if($(".element").has(".edit-field").length){ //if edit-field already exists
+      let val = $(".edit-field").val()
+      $(".edit-field").parent().html(val)
     }
-    let date = $(this).text()
-    $(this).html("<input type='text' class='editField'>")
-    $(".editField").val(date)
+    let val = $(this).text()
+    $(this).html("<input type='text' class='edit-field'>")
+    $(".edit-field").val(val)
+  })
+
+  /*
+    toggle text field on dropdown menu elements
+    the arrow MUST ALWAYS be there or else grandchildren+ will have unexpected behavior!
+  */
+  $(".notebook > div:not(.dates):not(.topic):not(.moderator):not(.remarks) .element").click(function() {
+    if($(this).children("select").hasClass("edit-field")) return; //no need to retoggle same element clicked on
+    else if($(".element").has(".edit-field").length){ //if edit-field already exists
+      let val = $(".edit-field").val()
+      $(".edit-field").parent().html(val)
+    }
+    let val = $(this).text()
+    let category = $(this).parent().parent().attr("class") //category the clicked object is from
+    //create <select> dropdown as an edit field
+    let entryHTML = entries[category].reduce((total, entry) => `${total}<option value=${entry}>${entry}</option>`
+                                              , "<select class='edit-field' onchange='selectOnChanged()'>")
+    $(this).html(entryHTML)
+    $(".edit-field").val(val)
   })
 
   //attempt to save date when user presses enter
-  $(document).on("keypress", ".dates .editField", e => {
+  $(document).on("keypress", ".dates input.edit-field", e => {
     if(e.which == 13){
-      if(checkDateFormat($(".editField").val())){
-        let classes = $(".editField").parent().attr("class").split(" ")
-        let index = parseInt(classes[1].charAt(classes[1].length - 1)) - 1
-        let newDate = $(".editField").val()
-        if(newDate != dates[index].toString()){
-          let key = getKey()
-
+      if(checkDateFormat($(".edit-field").val())){
+        let key = getKey()
+        let newDate = $(".edit-field").val()
+        if(newDate != key){
           if(key in edits)
             edits[key][newDate] = newDate
           else
             edits[key] = { newDate }
           $("button").show()
         }
-        $(".editField").parent().html(newDate)
+        $(".edit-field").parent().html(newDate)
       } else
         alert("Error: Enter a valid date")
     }
   })
-  //attempt to save chenges when user presses enter
-  $(document).on("keypress", ".roles .editField", e => {
+
+  /*
+    attempt to save chenges when user presses enter
+    the arrow MUST ALWAYS be there or else grandchildren+ will have unexpected behavior!
+  */
+  $(document).on("keypress", ".notebook > div:not(.dates) input.edit-field", e => {
     if(e.which == 13){
-      let val = $(".editField").val()
+      let val = $(".edit-field").val()
       let key = getKey()
-      let category = $(".selected").attr("id")
+      let category = getCategory()
       if(key in edits)
         edits[key][category] = val
       else
         edits[key] = { [category]: val }
-
-      $(".editField").parent().html(val)
+      $(".edit-field").parent().html(val)
       $("button").show() //show save button
     }
-  })
-  //select newly clicked element
-  $(".navbar div").click(function() {
-    $(".selected").removeClass("selected")
-    $(this).addClass("selected")
-    dates.forEach((date, i) =>
-      //if corresponding date and category has been changed from autogenerated values, redisplay those edits
-        $(`.roles .element${i+1}`).text((date in edits && $(".selected").attr("id") in edits[date]) ? edits[date][$(".selected").attr("id")] : ""))
   })
 
   $("button[name='cancel']").click(() => location.reload())
@@ -95,10 +111,51 @@ function loadListeners() {
       console.log("Posted!") //temp notif
     })
   })
+
+  //editing the entries pool
+  $("button[name='edit-entries-pool']").click(() => {
+    if($("button[name='edit-entries-pool']").text() == "Edit Entries Pool"){
+      $(".entries-pool > div").show()
+      $("button[name='edit-entries-pool']").text("Save Entries Pool")
+    } else {
+      $(".entries-pool > div").hide()
+      $("button[name='edit-entries-pool']").text("Edit Entries Pool")
+      console.log(Object.keys(entries))
+      Object.keys(entries)
+        .filter(key => $(`.${key}-entries > .entries`).has("textarea").length) //select only keys with a textarea
+        .forEach(key => {
+          //get entries from textarea, split elements by space or line break
+          let entriesArr = $(`.${key}-entries > .entries > textarea`).val().split("\n")
+          entries[key] = entries[key].concat(entriesArr)
+        })
+    }
+  })
+
+  $(".entries").click(function() {
+    if(!$(this).has("textarea").length){
+      $(this).html(`<textarea class="entries-area">${$(this).text()}</textarea>`)
+    }
+  })
 }
 
+//for <select>
+function selectOnChanged() {
+  let val = $(".edit-field").val()
+  let key = getKey()
+  //create obj in edits before assigning properties to it, avoid undefined behavior
+  if(!(key in edits)) edits[key] = {}
+  edits[key][getCategory()] = val
+  $(".edit-field").parent().html(val)
+}
+
+//used only when .edit-field exists
+function getCategory(){
+  return $(".edit-field").parent().parent().parent().attr("class")
+}
+
+//gets the class of .element at index n and extract the corresponding date
 function getKey() {
-  let classes = $(".editField").parent().attr("class").split(" ")
+  let classes = $(".edit-field").parent().attr("class").split(" ")
   let index = parseInt(classes[1].charAt(classes[1].length - 1)) - 1
   return dates[index].toString()
 }

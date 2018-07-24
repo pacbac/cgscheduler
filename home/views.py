@@ -3,4 +3,8 @@ from django.http import HttpResponse
 
 # Create your views here.
 def index(request):
-    return render(request, 'index.html', {})
+    context = {
+        'categories': ['Dates', 'Place', 'Topic', 'Moderator', 'Children', 'Youth', 'Remarks'],
+        'entries': ['Place', 'Children', 'Youth']
+    }
+    return render(request, 'index.html', context)

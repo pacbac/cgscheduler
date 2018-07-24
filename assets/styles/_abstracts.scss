@@ -1,11 +1,13 @@
-$raging-red: #ad2905;
-$light-red: #ffbfba;
 $half-black: rgba(0,0,0,0.5);
 $row-height: 42px;
 $min-height: 400px;
 $darkish-white: #efeded;
 $dark-green: #027517;
 $light-green: #b0db90;
+$very-light-green: #eaffee;
+$entries-list: 'place', 'children', 'youth';
+$btn-height: 40px;
+$textfld-border: rgba($dark-green, 0.4);
 
 @mixin border($style: none, $color: black, $width: 1px, $radius: 0px){
   border: {
@@ -25,4 +27,19 @@ $light-green: #b0db90;
   line-height: $height;
   text-align: center;
   vertical-align: middle;
+}
+
+%button {
+  height: $btn-height;
+  cursor: pointer;
+  font: {
+    family: Poppins;
+    size: 16px;
+  }
+  border: {
+    style: none;
+    radius: 3px;
+  }
+  color: white;
+  box-shadow: $half-black 1px 1px 3px;
 }
