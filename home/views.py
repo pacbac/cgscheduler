@@ -5,6 +5,6 @@ from django.http import HttpResponse
 def index(request):
     context = {
         'categories': ['Dates', 'Place', 'Topic', 'Moderator', 'Children', 'Youth', 'Remarks'],
-        'entries': ['Place', 'Children', 'Youth']
+        'entries': ['Place', 'Moderator', 'Children', 'Youth']
     }
     return render(request, 'index.html', context)

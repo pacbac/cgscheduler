@@ -36,8 +36,8 @@ h1.heading {
 
 .notebook {
   @include border(none, black, 1px, 10px);
-  margin: 4% auto 4% auto;
-  width: 80%;
+  margin: 2% auto 4% auto;
+  width: 85%;
   min-height: 150px;
   color: white;
   background-color: $darkish-white;
@@ -56,8 +56,12 @@ h1.heading {
   }
 
   > .topic {
-    flex-grow: 4 !important;
-    flex-basis: 40% !important;
+    flex-grow: 3 !important;
+    flex-basis: 30% !important;
+  }
+
+  > .remarks {
+    flex-grow: 2 !important;
   }
 }
 
@@ -124,7 +128,7 @@ h1.heading {
     margin-top: 20px;
     margin-left: 10px;
 
-    &[name="save"] {
+    &[name="save-tbl"] {
       background-color: #9e4f3f;
       display: none;
     }
@@ -148,13 +152,13 @@ h1.heading {
   justify-content: space-between;
 }
 
-
 @each $entry in $entries-list {
   .#{$entry}-entries {
-    max-width: 30%;
+    max-width: 24%;
     flex-grow: 1;
     box-shadow: $half-black 1px 1px 3px;
     display: none;
+    background-color: $very-light-green;
     > h3 {
       @include dimensions(100%, 40px);
       @include textCenter(40px);
@@ -171,7 +175,12 @@ h1.heading {
     .entries {
       min-height: 40px;
       background-color: $very-light-green;
+      color: black;
       padding: 15px;
+      font: {
+        family: Poppins;
+        size: 16px;
+      }
 
       textarea {
         @include border(solid, $textfld-border, 2px, 5px);
@@ -183,7 +192,6 @@ h1.heading {
         font: {
           family: Poppins;
           size: 16px;
-
         }
       }
     }

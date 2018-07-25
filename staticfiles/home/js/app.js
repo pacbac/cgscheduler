@@ -1,13 +1,13 @@
 var today = new Date();
-var numRows = 0;
-const rowMargin = 2;
+var startDate = new Date(today.getFullYear(), 0, 1)
 var edits = {}; //list of edits to be sent to server
 var dates = []; //list of dates on scheduler
 var categories = ['newDate', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks']
 var entries = {
-  place: [],
-  children: [],
-  youth: []
+  place: new Set(),
+  moderator: new Set(),
+  children: new Set(),
+  youth: new Set()
 }
 
 //override toString for convenient use
@@ -16,13 +16,6 @@ Date.prototype.toString = function() {
 }
 
 $(document).ready(function(){
-  { //misc UI adjustments
-    let rowHeight = $(".navbar").height()+rowMargin;
-    numRows = Math.floor(($(".dates").height()-$(".navbar").height())/rowHeight);
-    for(let i = 0; i < numRows; i++)
-      $(".info").append("<div  class='element element"+(i+1)+"'></div>");
-  }
-
   loadDates();
   loadListeners();
 
@@ -38,7 +31,7 @@ function loadListeners() {
     toggle text field on manual text entry elements
     the arrow MUST ALWAYS be there or else grandchildren+ will have unexpected behavior!
   */
-  $(".notebook > div:not(.youth):not(.children):not(.place) .element").click(function() {
+  $(".notebook > div:not(.youth):not(.children):not(.place):not(.moderator) .element").click(function() {
     if($(this).children("input").hasClass("edit-field")) return; //no need to retoggle same element clicked on
     else if($(".element").has(".edit-field").length){ //if edit-field already exists
       let val = $(".edit-field").val()
@@ -53,7 +46,7 @@ function loadListeners() {
     toggle text field on dropdown menu elements
     the arrow MUST ALWAYS be there or else grandchildren+ will have unexpected behavior!
   */
-  $(".notebook > div:not(.dates):not(.topic):not(.moderator):not(.remarks) .element").click(function() {
+  $(".notebook > div:not(.dates):not(.topic):not(.remarks) .element").click(function() {
     if($(this).children("select").hasClass("edit-field")) return; //no need to retoggle same element clicked on
     else if($(".element").has(".edit-field").length){ //if edit-field already exists
       let val = $(".edit-field").val()
@@ -61,9 +54,11 @@ function loadListeners() {
     }
     let val = $(this).text()
     let category = $(this).parent().parent().attr("class") //category the clicked object is from
-    //create <select> dropdown as an edit field
-    let entryHTML = entries[category].reduce((total, entry) => `${total}<option value=${entry}>${entry}</option>`
+    //create <select> dropdown as an edit field from the set of entries
+    let entryHTML = Array.from(entries[category])
+                          .reduce((total, entry) => `${total}<option value=${entry}>${entry}</option>`
                                               , "<select class='edit-field' onchange='selectOnChanged()'>")
+    entryHTML += "<option value='Cancelled'>Cancelled</option></select>"
     $(this).html(entryHTML)
     $(".edit-field").val(val)
   })
@@ -106,7 +101,7 @@ function loadListeners() {
   })
 
   $("button[name='cancel']").click(() => location.reload())
-  $("button[name='save']").click(() => {
+  $("button[name='save-tbl']").click(() => {
     $.post('/post', {edits}, json => {
       console.log("Posted!") //temp notif
     })
@@ -120,21 +115,23 @@ function loadListeners() {
     } else {
       $(".entries-pool > div").hide()
       $("button[name='edit-entries-pool']").text("Edit Entries Pool")
-      console.log(Object.keys(entries))
       Object.keys(entries)
         .filter(key => $(`.${key}-entries > .entries`).has("textarea").length) //select only keys with a textarea
         .forEach(key => {
           //get entries from textarea, split elements by space or line break
           let entriesArr = $(`.${key}-entries > .entries > textarea`).val().split("\n")
-          entries[key] = entries[key].concat(entriesArr)
+          entries[key].clear()
+          entriesArr.forEach(entry => entries[key].add(entry))
+          if(entries[key].has("")) entries[key].delete("")
+          $(`.${key}-entries > .entries`).html(entriesArr.join("<br>"))
         })
     }
   })
 
   $(".entries").click(function() {
-    if(!$(this).has("textarea").length){
-      $(this).html(`<textarea class="entries-area">${$(this).text()}</textarea>`)
-    }
+    if(!$(this).has("textarea").length)
+      $(this).html(`<textarea class="entries-area">${$(this).html().replace(/<br>/g, "\n")}</textarea>`)
+      // /<br>/g supports replacement of all line breaks, instead of just the first instance
   })
 }
 
@@ -175,7 +172,7 @@ function checkDateFormat(str){
 }
 
 function loadDates(){
-  const [thisYr, thisMonth, thisDate] = [today.getFullYear(), today.getMonth(), today.getDate()];
+  const [thisYr, thisMonth, thisDate] = [startDate.getFullYear(), startDate.getMonth(), startDate.getDate()];
 
   //calculate the next 2nd or 4th saturday, given a date
   var getSaturday = date => {
@@ -197,12 +194,13 @@ function loadDates(){
       $(`.dates .element${j}`).addClass("upcoming");
   }
 
-  for(let i = 0, monthInd = 0; i < numRows, monthInd < Math.floor(numRows/2); i+=2, monthInd++){
-    let addThisDate = getSaturday(new Date(thisYr, thisMonth+monthInd, 1));
-    processDays(addThisDate, i+1)
-    dates.push(addThisDate)
-    addThisDate = getSaturday(new Date(thisYr, thisMonth+monthInd, 15));
-    processDays(addThisDate, i+2)
-    dates.push(addThisDate)
+  for(let i = 0;; i++){
+    let addThisDate = getSaturday(new Date(thisYr, thisMonth+(i/2), (i % 2 === 0) ? 1 : 15));
+    if(addThisDate.getFullYear() === today.getFullYear()){
+      $(".info").append("<div  class='element element"+(i+1)+"'></div>");
+      processDays(addThisDate, i+1)
+      dates.push(addThisDate)
+    } else
+      break;
   }
 }
