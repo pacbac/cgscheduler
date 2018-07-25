@@ -114,7 +114,7 @@ h1.heading {
     padding: 0 10px;
     margin-top: 20px;
     margin-left: 10px; }
-    .save-btns button[name="save"] {
+    .save-btns button[name="save-tbl"] {
       background-color: #9e4f3f;
       display: none; }
     .save-btns button[name="cancel"] {

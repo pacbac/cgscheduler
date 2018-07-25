@@ -71,11 +71,13 @@ function loadListeners() {
         let newDate = $(".edit-field").val()
         if(newDate != key){
           if(key in edits)
-            edits[key][newDate] = newDate
+            edits[key]['newDate'] = newDate
           else
             edits[key] = { newDate }
           $("button").show()
-        }
+        } else
+          deleteObjProp(key, 'newDate')
+          //if we wish to revert the date back to the auto-gen'd version, delete the edit data
         $(".edit-field").parent().html(newDate)
       } else
         alert("Error: Enter a valid date")
@@ -95,6 +97,9 @@ function loadListeners() {
         edits[key][category] = val
       else
         edits[key] = { [category]: val }
+
+      if(val == "") //if new value just resets entry, delete from edits object
+        deleteObjProp(key, category)
       $(".edit-field").parent().html(val)
       $("button").show() //show save button
     }
@@ -128,6 +133,7 @@ function loadListeners() {
     }
   })
 
+  //when an entry pool box is clicked on, open a textarea to edit
   $(".entries").click(function() {
     if(!$(this).has("textarea").length)
       $(this).html(`<textarea class="entries-area">${$(this).html().replace(/<br>/g, "\n")}</textarea>`)
@@ -143,6 +149,17 @@ function selectOnChanged() {
   if(!(key in edits)) edits[key] = {}
   edits[key][getCategory()] = val
   $(".edit-field").parent().html(val)
+}
+
+//avoid memory leaks with useless edits
+function deleteObjProp(key, category = undefined){
+  if(key in edits){
+    if(category in edits[key])
+      delete edits[key][category]
+    if(Object.keys(edits[key]).length === 0 && edits[key].constructor === Object)
+      delete edits[key] //delete the parent object as well if it is now empty
+  } else
+    throw new Error(`${key} not available to delete`)
 }
 
 //used only when .edit-field exists
