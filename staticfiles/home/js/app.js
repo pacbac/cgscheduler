@@ -153,10 +153,19 @@ function selectOnChanged() {
   let key = getKey()
   let category = getCategory()
 
-  if(!checkRowErr(key, category, val))
-    alert(`Warning: "${category}"" has conflicts with other roles for ${key}.`)
-  if(!checkColErr(key, category, val))
-    alert(`Warning: "${category}" has the same values in a row at ${key}.`)
+  if(!checkRowErr(key, category, val)){
+    if(key in edits && 'newDate' in edits[key])
+      alert(`Warning: "${category}" has conflicts with other roles for ${edits[key]['newDate']}.`)
+    else
+      alert(`Warning: "${category}" has conflicts with other roles for ${key}.`)
+  }
+  if(!checkColErr(key, category, val)){
+    if(key in edits && 'newDate' in edits[key])
+      alert(`Warning: "${category}" has the same values in a row at ${edits[key]['newDate']}.`)
+    else
+      alert(`Warning: "${category}" has the same values in a row at ${key}.`)
+  }
+
   //create obj in edits before assigning properties to it
   if(!(key in edits)) edits[key] = {}
   edits[key][category] = val
