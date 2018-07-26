@@ -1,8 +1,8 @@
-var today = new Date();
-var startDate = new Date(today.getFullYear(), 0, 1)
-var edits = {}; //list of edits to be sent to server
+const today = new Date();
+const startDate = new Date(today.getFullYear(), 0, 1)
 var dates = []; //list of dates on scheduler
-var categories = ['newDate', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks']
+const categories = ['newDate', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks']
+var edits = {}; //list of edits to be sent to server
 var entries = {
   place: new Set(),
   moderator: new Set(),
@@ -10,14 +10,16 @@ var entries = {
   youth: new Set()
 }
 
-//override toString for convenient use
+//override for convenient use
 Date.prototype.toString = function() {
   return `${this.getMonth()+1}/${this.getDate()}/${this.getFullYear()}`
 }
 
 $(document).ready(function(){
   loadDates();
-  loadListeners();
+  loadElemListeners();
+  loadKeypressListeners();
+  loadBtnListeners();
 
   //populate the table with previously saved edits
   categories.forEach(category => {
@@ -26,7 +28,7 @@ $(document).ready(function(){
   })
 });
 
-function loadListeners() {
+function loadElemListeners() {
   /*
     toggle text field on manual text entry elements
     the arrow MUST ALWAYS be there or else grandchildren+ will have unexpected behavior!
@@ -62,7 +64,9 @@ function loadListeners() {
     $(this).html(entryHTML)
     $(".edit-field").val(val)
   })
+}
 
+function loadKeypressListeners() {
   //attempt to save date when user presses enter
   $(document).on("keypress", ".dates input.edit-field", e => {
     if(e.which == 13){
@@ -104,7 +108,9 @@ function loadListeners() {
       $("button").show() //show save button
     }
   })
+}
 
+function loadBtnListeners() {
   $("button[name='cancel']").click(() => location.reload())
   $("button[name='save-tbl']").click(() => {
     $.post('/post', {edits}, json => {
@@ -141,17 +147,51 @@ function loadListeners() {
   })
 }
 
-//for <select>
+//listener callback for <select>
 function selectOnChanged() {
   let val = $(".edit-field").val()
   let key = getKey()
-  //create obj in edits before assigning properties to it, avoid undefined behavior
+  let category = getCategory()
+
+  if(!checkRowErr(key, category, val))
+    alert(`Warning: "${category}"" has conflicts with other roles for ${key}.`)
+  if(!checkColErr(key, category, val))
+    alert(`Warning: "${category}" has the same values in a row at ${key}.`)
+  //create obj in edits before assigning properties to it
   if(!(key in edits)) edits[key] = {}
-  edits[key][getCategory()] = val
+  edits[key][category] = val
   $(".edit-field").parent().html(val)
 }
 
-//avoid memory leaks with useless edits
+//each row (same date) cannot have duplicate values for: moderator & (youth | children)
+function checkRowErr(key, category, val){
+  if(val == "Cancelled") return true //"Cancelled" doesn't count as duplicate
+  if(category == "youth" || category == "children")
+    return !(key in edits && 'moderator' in edits[key] && edits[key]['moderator'] == val)
+  else if(category == "moderator")
+    return !(key in edits && ('youth' in edits[key] && edits[key]['youth'] == val
+      || 'children' in edits[key] && edits[key]['children'] == val))
+  return true;
+}
+
+//each col (same category) cannot have consecutive duplicate values for: moderator, youth, children
+function checkColErr(key, category, val){
+  if(val == "Cancelled") return true //"Cancelled" doesn't count as duplicate
+  let keyIndx = dates.indexOf(dates.filter(date => date.toString() == key)[0])
+  let nextKey = keyIndx < dates.length - 1 ? dates[keyIndx+1].toString() : null
+  let prevKey = keyIndx > 0 ? dates[keyIndx-1].toString() : null
+  if(keyIndx < dates.length - 1
+    && nextKey in edits && category in edits[nextKey]
+    && edits[nextKey][category] == val)
+    return false
+    //return false for error b/c strings are the same, true otherwise
+
+  if(keyIndx > 0 && prevKey in edits && category in edits[prevKey])
+    return edits[prevKey][category] != val
+  return true
+}
+
+//avoid memory leaks by deleting useless object properties
 function deleteObjProp(key, category = undefined){
   if(key in edits){
     if(category in edits[key])
@@ -170,7 +210,8 @@ function getCategory(){
 //gets the class of .element at index n and extract the corresponding date
 function getKey() {
   let classes = $(".edit-field").parent().attr("class").split(" ")
-  let index = parseInt(classes[1].charAt(classes[1].length - 1)) - 1
+  let indxStr = classes[1].substring(classes[1].indexOf("t")+1)
+  let index = parseInt(indxStr) - 1
   return dates[index].toString()
 }
 
@@ -190,7 +231,6 @@ function checkDateFormat(str){
 
 function loadDates(){
   const [thisYr, thisMonth, thisDate] = [startDate.getFullYear(), startDate.getMonth(), startDate.getDate()];
-
   //calculate the next 2nd or 4th saturday, given a date
   var getSaturday = date => {
     let day = date.getDate(),
