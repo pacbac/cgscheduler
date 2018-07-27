@@ -45,23 +45,23 @@ h1.heading {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+}
 
-  > div:not(.save-btns):not(.entries-pool) {
+@each $category in $categories {
+  div.#{$category} {
     margin: 0;
     padding: 0;
     min-height: $min-height;
     background-color: $darkish-white;
     flex-grow: 1;
     flex-basis: 10%;
-  }
 
-  > .topic {
-    flex-grow: 3 !important;
-    flex-basis: 30% !important;
-  }
-
-  > .remarks {
-    flex-grow: 2 !important;
+    @if $category == 'topic' {
+      flex-grow: 3 !important;
+      flex-basis: 30% !important;
+    } @else if $category == 'remarks' {
+      flex-grow: 2 !important;
+    }
   }
 }
 
@@ -88,15 +88,23 @@ h1.heading {
     family: Poppins;
     size: 22px;
   }
-  box-shadow: 0px 4px 5px $half-black;
+  box-shadow: 0px 1px 0.5px $barely-black;
   color: black;
+  background-color: inherit;
   height: $row-height;
-  background-color: $very-light-green;
   position: relative;
   border-bottom: {
     style: solid;
     color: rgba($dark-green, 0.25);
     width: 2px;
+  }
+
+  &:nth-child(odd) {
+    background-color: $very-light-green;
+  }
+
+  &:nth-child(even) {
+    background-color: $very-light-green2;
   }
 
   //textfields for entries into scheduler
