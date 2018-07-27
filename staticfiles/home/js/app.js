@@ -1,3 +1,5 @@
+import { csrftoken, csrfSafeMethod } from './cookie.js'
+
 const today = new Date();
 const startDate = new Date(today.getFullYear(), 0, 1)
 var dates = []; //list of dates on scheduler
@@ -20,6 +22,14 @@ $(document).ready(function(){
   loadElemListeners();
   loadKeypressListeners();
   loadBtnListeners();
+
+  $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+              xhr.setRequestHeader("X-CSRFToken", csrftoken);
+          }
+      }
+  });
 
   //populate the table with previously saved edits
   categories.forEach(category => {
@@ -113,8 +123,9 @@ function loadKeypressListeners() {
 function loadBtnListeners() {
   $("button[name='cancel']").click(() => location.reload())
   $("button[name='save-tbl']").click(() => {
-    $.post('/post', {edits}, json => {
+    $.post('/update', {edits}, json => {
       console.log("Posted!") //temp notif
+      alert(json)
     })
   })
 
@@ -174,6 +185,7 @@ function selectOnChanged() {
 
 //each row (same date) cannot have duplicate values for: moderator & (youth | children)
 function checkRowErr(key, category, val){
+  if(category == "place") return true //place should be omitted from evaluation
   if(val == "Cancelled") return true //"Cancelled" doesn't count as duplicate
   if(category == "youth" || category == "children")
     return !(key in edits && 'moderator' in edits[key] && edits[key]['moderator'] == val)
@@ -185,6 +197,7 @@ function checkRowErr(key, category, val){
 
 //each col (same category) cannot have consecutive duplicate values for: moderator, youth, children
 function checkColErr(key, category, val){
+  if(category == "place") return true //place should be omitted from evaluation
   if(val == "Cancelled") return true //"Cancelled" doesn't count as duplicate
   let keyIndx = dates.indexOf(dates.filter(date => date.toString() == key)[0])
   let nextKey = keyIndx < dates.length - 1 ? dates[keyIndx+1].toString() : null
