@@ -1,7 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, QueryDict
 from utils import parseDate
 import datetime
+import json
+from .models import Edit, Entry
 
 # Create your views here.
 def index(request):
@@ -14,5 +16,6 @@ def index(request):
 
 def update(request):
     if request.method != 'POST': return HttpResponse("Doesn't work")
-    print("It works")
+    POST = QueryDict.dict(request.POST)
+    
     return HttpResponse("It works!")
