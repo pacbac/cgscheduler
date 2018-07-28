@@ -12,3 +12,14 @@ def strToDate(str):
     dateArr = str.split("/")
     dateArr = list(map(lambda e: int(e), dateArr))
     return datetime.date(dateArr[2], dateArr[0], dateArr[1])
+
+# check if key is a date
+def chkDateFormat(key):
+    splitDate = key.split("/")
+    if len(splitDate) != 3: return False
+    month, day, year = splitDate
+    try:
+        testDate = datetime.date(int(year), int(month), int(day))
+        return True
+    except:
+        return False

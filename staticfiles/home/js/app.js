@@ -1,4 +1,4 @@
-import { csrftoken, csrfSafeMethod } from './cookie.js'
+//import { csrftoken, csrfSafeMethod } from './cookie.js'
 
 const today = new Date();
 const startDate = new Date(today.getFullYear(), 0, 1)
@@ -123,7 +123,7 @@ function loadKeypressListeners() {
 function loadBtnListeners() {
   $("button[name='cancel']").click(() => location.reload())
   $("button[name='save-tbl']").click(() => {
-    $.post('/update', {edits}, json => {
+    $.post('/updateedits', {edits}, json => {
       console.log("Posted!") //temp notif
       alert(json)
     })
