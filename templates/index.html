@@ -14,9 +14,13 @@
           <div class="navbar">{{ category }}</div>
           <div class="info">
             {% for date in dates %}
-              <div class="element element{{ forloop.counter }}">
+              <div class="element element{{ forloop.counter0 }}">
                 {% if category == "dates" %}
-                  {{ date }}
+                  {% if date in edits and "newDate" in edits|get_item:date %}
+                    {{ edits|get_item:date|get_item:"newDate" }}
+                  {% else %}
+                    {{ date }}
+                  {% endif %}
                 {% else %}
                   {% if date in edits and category in edits|get_item:date %}
                     {{ edits|get_item:date|get_item:category }}

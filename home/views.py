@@ -24,18 +24,23 @@ def updateEdits(request):
     POST = QueryDict.dict(request.POST)
     response = {}
     for key in POST.keys():
-        # splitKey is always in the form ('edits', 'defaultdate', 'category')
+        # splitKey is always in the form ('edits', 'dateIndex', 'category')
         splitKeys = tuple(key_utils.splitKey(key))
-        if key_utils.checkKeys(splitKeys) and len(splitKeys) == 3:
-            editDate = date_utils.strToDate(splitKeys[1])
-            edit = TableEdit.objects.filter(date__startswith=editDate)
-            if not edit.exists(): # new obj if a new entry
-                edit = TableEdit(date=editDate)
-                edit.save()
-                db_utils.INSTCATGRIES[splitKeys[2]](edit, POST[key])
-                print("New entry saved: (%s)" % str(edit))
+        if key_utils.checkKeys(splitKeys):
+            origDate = date_utils.loadDates()[int(splitKeys[1])]
+            edit = TableEdit.objects.filter(date__startswith=date_utils.strToDate(origDate))
+            if not edit.exists():
+                if (not ((splitKeys[2] == 'newDate' and origDate == POST[key]) # ignore entry if date is just default
+                    or (splitKeys[2] != 'newDate' and POST[key] == ""))): # ignore entry if category is empty
+                    edit = TableEdit(date=date_utils.strToDate(origDate))
+                    edit.save()
+                    db_utils.INSTCATGRIES[splitKeys[2]](edit, POST[key])
+                    print("New entry saved: (%s)" % str(edit))
+                else:
+                    print("New entry has junk attribute: %s %s" % (key, POST[key]))
             else:
                 db_utils.CATGRIES[splitKeys[2]](edit, POST[key]) # each entry has varied properties
+                print("Entry modified: (%s)" % str(edit[0]))
         else:
             response[key] = "Error: Could not post to server due to improper formatting"
     return HttpResponse(json.dumps(response))

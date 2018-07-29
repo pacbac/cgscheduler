@@ -15,7 +15,7 @@ class TableEdit(models.Model):
 
     def __str__(self):
         propArr = [date_utils.dateToStr(self.date)]
-        if self.correctDate: propArr.append("newDate: " + self.correctDate)
+        if self.correctDate: propArr.append("newDate: " + date_utils.dateToStr(self.correctDate))
         if self.place: propArr.append("Place: " + self.place)
         if self.moderator: propArr.append("Mod: " + self.moderator)
         if self.topic: propArr.append("Topic: " + self.topic)

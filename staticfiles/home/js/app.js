@@ -161,24 +161,24 @@ function loadBtnListeners() {
 
 //listener callback for <select>
 function selectOnChanged() {
-  let val = $(".edit-field").val()
+  let val = $(".edit-field").val().trim()
   let key = getKey()
   let category = getCategory()
 
   if(!checkRowErr(key, category, val)){
     if(key in edits && 'newDate' in edits[key])
-      alert(`Warning: "${category}" has conflicts with other roles for ${edits[key]['newDate']}.`)
+      alert(`Warning: ${val} has conflicts with other roles for ${edits[key]['newDate']}.`)
     else {
       let keyDate = $(`.dates .element${key}`).text()
-      alert(`Warning: "${category}" has conflicts with other roles for ${keyDate}.`)
+      alert(`Warning: ${val} has conflicts with other roles for ${keyDate}.`)
     }
   }
   if(!checkColErr(key, category, val)){
     if(key in edits && 'newDate' in edits[key])
-      alert(`Warning: "${category}" has the same values in a row at ${edits[key]['newDate']}.`)
+      alert(`Warning: ${val} is assigned consecutively to ${category} on ${edits[key]['newDate']}.`)
     else {
       let keyDate = $(`.dates .element${key}`).text()
-      alert(`Warning: "${category}" has the same values in a row at ${keyDate}.`)
+      alert(`Warning: ${val} is assigned consecutively to ${category} on ${keyDate}.`)
     }
   }
 
@@ -194,27 +194,23 @@ function checkRowErr(key, category, val){
   if(category == "place") return true //place should be omitted from evaluation
   if(val == "Cancelled") return true //"Cancelled" doesn't count as duplicate
   if(category == "youth" || category == "children")
-    return !(key in edits && 'moderator' in edits[key] && edits[key]['moderator'] == val)
+    return $(`.moderator .element${key}`).text() != val
   else if(category == "moderator")
-    return !(key in edits && ('youth' in edits[key] && edits[key]['youth'] == val
-      || 'children' in edits[key] && edits[key]['children'] == val))
+    return $(`.children .element${key}`).text() != val && $(`.youth .element${key}`).text() != val
   return true;
 }
 
 //each col (same category) cannot have consecutive duplicate values for: moderator, youth, children
 function checkColErr(key, category, val){
   if(category == "place") return true //place should be omitted from evaluation
-  if(val == "Cancelled") return true //"Cancelled" doesn't count as duplicate
-  let nextKey = key < dates.length - 1 ? key + 1 : null
-  let prevKey = key > 0 ? key - 1 : null
-  if(key < dates.length - 1
-    && nextKey in edits && category in edits[nextKey]
-    && edits[nextKey][category] == val)
+  if(val == "Cancelled" || val.trim() == "") return true //"Cancelled" doesn't count as duplicate
+  let nextKey = key + 1
+  let prevKey = key - 1
+  if($(`.${category} .element${nextKey}`).length && val == $(`.${category} .element${nextKey}`).text())
     return false
     //return false for error b/c strings are the same, true otherwise
-
-  if(key > 0 && prevKey in edits && category in edits[prevKey])
-    return edits[prevKey][category] != val
+  if($(`.${category} .element${prevKey}`).length)
+    return val != $(`.${category} .element${prevKey}`).text()
   return true
 }
 
@@ -237,7 +233,7 @@ function getCategory(){
 function getKey() {
   let classes = $(".edit-field").parent().attr("class").split(" ")
   let indxStr = classes[1].substring(classes[1].indexOf("t")+1)
-  return parseInt(indxStr) - 1
+  return parseInt(indxStr)
 }
 
 function checkDateFormat(str){
