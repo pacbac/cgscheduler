@@ -18,7 +18,6 @@ Date.prototype.toString = function() {
 }
 
 $(document).ready(function(){
-  loadDates();
   loadElemListeners();
   loadKeypressListeners();
   loadBtnListeners();
@@ -169,20 +168,25 @@ function selectOnChanged() {
   if(!checkRowErr(key, category, val)){
     if(key in edits && 'newDate' in edits[key])
       alert(`Warning: "${category}" has conflicts with other roles for ${edits[key]['newDate']}.`)
-    else
-      alert(`Warning: "${category}" has conflicts with other roles for ${key}.`)
+    else {
+      let keyDate = $(`.dates .element${key}`).text()
+      alert(`Warning: "${category}" has conflicts with other roles for ${keyDate}.`)
+    }
   }
   if(!checkColErr(key, category, val)){
     if(key in edits && 'newDate' in edits[key])
       alert(`Warning: "${category}" has the same values in a row at ${edits[key]['newDate']}.`)
-    else
-      alert(`Warning: "${category}" has the same values in a row at ${key}.`)
+    else {
+      let keyDate = $(`.dates .element${key}`).text()
+      alert(`Warning: "${category}" has the same values in a row at ${keyDate}.`)
+    }
   }
 
   //create obj in edits before assigning properties to it
   if(!(key in edits)) edits[key] = {}
   edits[key][category] = val
   $(".edit-field").parent().html(val)
+  $("button").show()
 }
 
 //each row (same date) cannot have duplicate values for: moderator & (youth | children)
@@ -201,16 +205,15 @@ function checkRowErr(key, category, val){
 function checkColErr(key, category, val){
   if(category == "place") return true //place should be omitted from evaluation
   if(val == "Cancelled") return true //"Cancelled" doesn't count as duplicate
-  let keyIndx = dates.indexOf(dates.filter(date => date.toString() == key)[0])
-  let nextKey = keyIndx < dates.length - 1 ? dates[keyIndx+1].toString() : null
-  let prevKey = keyIndx > 0 ? dates[keyIndx-1].toString() : null
-  if(keyIndx < dates.length - 1
+  let nextKey = key < dates.length - 1 ? key + 1 : null
+  let prevKey = key > 0 ? key - 1 : null
+  if(key < dates.length - 1
     && nextKey in edits && category in edits[nextKey]
     && edits[nextKey][category] == val)
     return false
     //return false for error b/c strings are the same, true otherwise
 
-  if(keyIndx > 0 && prevKey in edits && category in edits[prevKey])
+  if(key > 0 && prevKey in edits && category in edits[prevKey])
     return edits[prevKey][category] != val
   return true
 }
@@ -230,12 +233,11 @@ function getCategory(){
   return $(".edit-field").parent().parent().parent().attr("class")
 }
 
-//gets the class of .element at index n and extract the corresponding date
+//gets the index of the element being edited
 function getKey() {
   let classes = $(".edit-field").parent().attr("class").split(" ")
   let indxStr = classes[1].substring(classes[1].indexOf("t")+1)
-  let index = parseInt(indxStr) - 1
-  return dates[index].toString()
+  return parseInt(indxStr) - 1
 }
 
 function checkDateFormat(str){
@@ -249,13 +251,5 @@ function checkDateFormat(str){
   } catch(e) {
     console.log(e)
     return false
-  }
-}
-
-function loadDates(){
-  let i = 1
-  while($(`.element${i}`).length) {
-    dates.push(new Date($(`.dates .element${i}`).text()))
-    i++
   }
 }

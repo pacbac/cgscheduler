@@ -1,9 +1,7 @@
-from .date_utils import checkDateFormat
+from .date_utils import checkDateFormat, loadDates
 import re
 
 SUBKEYS = {
-                'edits': True, # when split used on POSt request, edits/entries become keys
-                'entries': True,
                 'newDate': True,
                 'place': True,
                 'topic': True,
@@ -13,15 +11,28 @@ SUBKEYS = {
                 'remarks': True
             }
 
+def checkEditsKeys(keys):
+    try:
+        dateIndex = int(keys[1])
+        if dateIndex < 0 or dateIndex >= len(loadDates()): return False
+        return keys[2] in SUBKEYS
+    except:
+        return False
+
+def checkEntriesKeys(keys):
+    return True
+
+POSTTYPES = {
+                'edits': checkEditsKeys,
+                'entries': checkEntriesKeys
+            }
+
 # split the incorrectly formatted key up properly, higher index = more nested in original JSON
 def splitKey(key):
     return list(filter(lambda e: e != '', re.split("[\[\]]", key)))
 
 # validate that the splitted keys are in proper format
 def checkKeys(keys):
-    for key in keys:
-        try:
-            SUBKEYS[key]
-        except KeyError:
-            if not checkDateFormat(key): return False
-    return True
+    if len(keys) != 2 and len(keys) != 3: return False
+    if keys[0] not in POSTTYPES: return False
+    return POSTTYPES[keys[0]](keys)
