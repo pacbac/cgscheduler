@@ -1,4 +1,4 @@
-from .date_utils import chkDateFormat
+from .date_utils import checkDateFormat
 import re
 
 SUBKEYS = {
@@ -23,5 +23,5 @@ def checkKeys(keys):
         try:
             SUBKEYS[key]
         except KeyError:
-            if not chkDateFormat(key): return False
+            if not checkDateFormat(key): return False
     return True

@@ -1,6 +1,8 @@
+from . import date_utils
+
 ''' Use when obj is not an instance, but was called with Model.objects.filter(...) '''
 def editNewDate(obj, newDate):
-    obj.update(correctDate=newDate)
+    obj.update(correctDate=date_utils.strToDate(newDate).__str__())
 
 def editPlace(obj, newPlace):
     obj.update(place=newPlace)
@@ -32,7 +34,7 @@ CATGRIES = {
 
 ''' Use to edit an instance '''
 def editInstNewDate(inst, newDate):
-    inst.correctDate = newDate
+    inst.correctDate = date_utils.strToDate(newDate).__str__()
     inst.save(update_fields=['correctDate'])
 
 def editInstPlace(inst, newPlace):

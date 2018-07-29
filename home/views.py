@@ -7,11 +7,16 @@ from .models import TableEdit, EntryEdit
 
 # Create your views here.
 def index(request):
-    print(date_utils.dateToStr(datetime.date.today()))
     context = {
-        'categories': ['Dates', 'Place', 'Topic', 'Moderator', 'Children', 'Youth', 'Remarks'],
-        'entries': ['Place', 'Moderator', 'Children', 'Youth']
+        'categories': ['dates', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks'],
+        'entries': ['Place', 'Moderator', 'Children', 'Youth'],
+        'dates': date_utils.loadDates(),
+        'edits': {}
     }
+    dateArr = date_utils.loadDates()
+    tableedits = TableEdit.objects.filter(date__gte=date_utils.STARTDATE)
+    for edit in tableedits:
+        context['edits'][date_utils.dateToStr(edit.date)] = edit.toDict()
     return render(request, 'index.html', context)
 
 def updateEdits(request):

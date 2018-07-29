@@ -14,12 +14,23 @@ class TableEdit(models.Model):
 
     def __str__(self):
         propArr = [date_utils.dateToStr(self.date)]
+        if self.correctDate: propArr.append("newDate: " + self.correctDate)
         if self.place: propArr.append("Place: " + self.place)
         if self.moderator: propArr.append("Mod: " + self.moderator)
         if self.topic: propArr.append("Topic: " + self.topic)
         if self.children: propArr.append("Children: " + self.children)
         if self.remarks: propArr.append("Remarks: " + self.remarks)
         return ", ".join(propArr)
+
+    def toDict(self):
+        d = {}
+        if self.correctDate: d['newDate'] = self.correctDate
+        if self.place: d['place'] = self.place
+        if self.moderator: d['moderator'] = self.moderator
+        if self.topic: d['topic'] = self.topic
+        if self.children: d['children'] = self.children
+        if self.remarks: d['remarks'] = self.remarks
+        return d
 
 # Model for edits in the entry pool
 class EntryEdit(models.Model):

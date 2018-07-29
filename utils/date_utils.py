@@ -1,5 +1,8 @@
 import datetime
 
+TODAY = datetime.date.today()
+STARTDATE = datetime.date(TODAY.year, 1, 1)
+
 def dateToStr(date):
     dateArr = date.__str__().split("-") # year-mo-da format
     yr = dateArr.pop(0)
@@ -14,7 +17,7 @@ def strToDate(str):
     return datetime.date(dateArr[2], dateArr[0], dateArr[1])
 
 # check if key is a date
-def chkDateFormat(key):
+def checkDateFormat(key):
     splitDate = key.split("/")
     if len(splitDate) != 3: return False
     month, day, year = splitDate
@@ -23,3 +26,23 @@ def chkDateFormat(key):
         return True
     except:
         return False
+
+def loadDates():
+    dateArr = []
+
+    def getSaturday(date):
+        wkDay = 0 if date.isoweekday() == 7 else date.isoweekday()
+        if date.day <= 14:
+            return date.replace(day=14-wkDay)
+        elif date.day <= 28:
+            return date.replace(day=28-wkDay)
+        return date.replace(day=42-wkDay)
+
+    i = 0
+    while True:
+        try:
+            addThisDate = getSaturday(datetime.date(STARTDATE.year, STARTDATE.month+int(i/2), 1 if i % 2 == 0 else 15))
+            dateArr.append(dateToStr(addThisDate))
+            i+=1
+        except:
+            return dateArr

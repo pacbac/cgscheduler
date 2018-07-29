@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 <html>
+  {% load dict_extras %}
   <head>
     <title>Cell Group Schedule</title>
     {% include "links.html" %}
@@ -9,9 +10,21 @@
     <h1 class="heading">Cell Group Schedule</h1>
     <div class="notebook">
       {% for category in categories %}
-        <div class="{% filter lower %}{{ category }}{% endfilter %}">
+        <div class="{{ category|lower }}">
           <div class="navbar">{{ category }}</div>
-          <div class="info"></div>
+          <div class="info">
+            {% for date in dates %}
+              <div class="element element{{ forloop.counter }}">
+                {% if category == "dates" %}
+                  {{ date }}
+                {% else %}
+                  {% if date in edits and category in edits|get_item:date %}
+                    {{ edits|get_item:date|get_item:category }}
+                  {% endif %}
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
         </div>
       {% endfor %}
       <div class="save-btns">

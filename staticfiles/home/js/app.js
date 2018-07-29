@@ -31,6 +31,10 @@ $(document).ready(function(){
       }
   });
 
+  $(".element").each(function(){
+    $(this).text($(this).text().trim())
+  })
+
   //populate the table with previously saved edits
   categories.forEach(category => {
     let datesWEdit = dates.filter(date => date in edits && category in edits[date])
@@ -112,8 +116,6 @@ function loadKeypressListeners() {
       else
         edits[key] = { [category]: val }
 
-      if(val == "") //if new value just resets entry, delete from edits object
-        deleteObjProp(key, category)
       $(".edit-field").parent().html(val)
       $("button").show() //show save button
     }
@@ -220,8 +222,7 @@ function deleteObjProp(key, category = undefined){
       delete edits[key][category]
     if(Object.keys(edits[key]).length === 0 && edits[key].constructor === Object)
       delete edits[key] //delete the parent object as well if it is now empty
-  } else
-    throw new Error(`${key} not available to delete`)
+  }
 }
 
 //used only when .edit-field exists
@@ -243,8 +244,8 @@ function checkDateFormat(str){
   let [month, day, year] = splitDate
   try {
     [month, day, year] = [parseInt(month), parseInt(day), parseInt(year)]
-    let testDate = new Date(year, month, day)
-    return year === testDate.getFullYear() && month === testDate.getMonth() && day === testDate.getDate()
+    let testDate = new Date(year, month-1, day) //month is 0 indexed
+    return year === testDate.getFullYear() && month-1 === testDate.getMonth() && day === testDate.getDate()
   } catch(e) {
     console.log(e)
     return false
@@ -252,34 +253,9 @@ function checkDateFormat(str){
 }
 
 function loadDates(){
-  const [thisYr, thisMonth, thisDate] = [startDate.getFullYear(), startDate.getMonth(), startDate.getDate()];
-  //calculate the next 2nd or 4th saturday, given a date
-  var getSaturday = date => {
-    let day = date.getDate(),
-        wkDay = date.getDay()
-    if(day <= 14)
-      date.setDate(14-wkDay);
-    else if(day <= 28)
-      date.setDate(28-wkDay);
-    else
-      date.setDate(42-wkDay);
-    return date;
-  };
-
-  var processDays = (addThisDate, j) => {
-    let [addMonth, addDate, addYr] = [addThisDate.getMonth(), addThisDate.getDate(), addThisDate.getFullYear()];
-    $(`.dates .element${j}`).text(`${addMonth+1}/${addDate}/${addYr}`);
-    if(addMonth === thisMonth && addDate >= thisDate)
-      $(`.dates .element${j}`).addClass("upcoming");
-  }
-
-  for(let i = 0;; i++){
-    let addThisDate = getSaturday(new Date(thisYr, thisMonth+(i/2), (i % 2 === 0) ? 1 : 15));
-    if(addThisDate.getFullYear() === today.getFullYear()){
-      $(".info").append("<div  class='element element"+(i+1)+"'></div>");
-      processDays(addThisDate, i+1)
-      dates.push(addThisDate)
-    } else
-      break;
+  let i = 1
+  while($(`.element${i}`).length) {
+    dates.push(new Date($(`.dates .element${i}`).text()))
+    i++
   }
 }
