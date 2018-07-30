@@ -73,6 +73,7 @@ function loadElemListeners() {
     let entryHTML = Array.from(entries[category])
                           .reduce((total, entry) => `${total}<option value=${entry}>${entry}</option>`
                                               , "<select class='edit-field' onchange='selectOnChanged()'>")
+    entryHTML += "<option value=''></option>"
     entryHTML += "<option value='Cancelled'>Cancelled</option></select>"
     $(this).html(entryHTML)
     $(".edit-field").val(val)
@@ -192,7 +193,7 @@ function selectOnChanged() {
 //each row (same date) cannot have duplicate values for: moderator & (youth | children)
 function checkRowErr(key, category, val){
   if(category == "place") return true //place should be omitted from evaluation
-  if(val == "Cancelled") return true //"Cancelled" doesn't count as duplicate
+  if(val == "Cancelled" || val.trim() == "") return true //"Cancelled" doesn't count as duplicate
   if(category == "youth" || category == "children")
     return $(`.moderator .element${key}`).text() != val
   else if(category == "moderator")
