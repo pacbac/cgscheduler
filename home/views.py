@@ -36,10 +36,11 @@ def updateEdits(request):
                     edit.save()
                     db_utils.INSTCATGRIES[splitKeys[2]](edit, POST[key])
                     print("New entry saved: (%s)" % str(edit))
-                else:
-                    print("New entry has junk attribute: %s %s" % (key, POST[key]))
             else:
-                db_utils.CATGRIES[splitKeys[2]](edit, POST[key]) # each entry has varied properties
+                if (splitKeys[2] == 'newDate' and origDate == POST[key]) or (splitKeys[2] != 'newDate' and POST[key] == ""):
+                    db_utils.CATGRIES[splitKeys[2]](edit, None)
+                else:
+                    db_utils.CATGRIES[splitKeys[2]](edit, POST[key]) # each entry has varied properties
                 print("Entry modified: (%s)" % str(edit[0]))
         else:
             response[key] = "Error: Could not post to server due to improper formatting"
