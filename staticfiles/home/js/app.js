@@ -136,7 +136,17 @@ function loadBtnListeners() {
   })
 
   $("button[name='cancel-entries']").click(() => {
-
+    $(".entries-pool > div").each(function(){
+      let type = $(this).attr("class")
+      console.log($(this).attr("class"))
+      type = type.substring(0, type.indexOf("-")) // extract the ${ctgry} part of the class name
+      let oldHTML = Object.keys(entries[type]).reduce((total, entry) => total + entry + "<br>", "")
+      oldHTML = oldHTML.substring(0, oldHTML.length - 4) // remove the last <br>, which is length 4
+      $(this).children(".entries").html(oldHTML)
+      $(this).hide()
+      $("button[name='cancel-entries']").hide()
+      $("button[name='edit-entries-pool']").text("Edit Entries Pool")
+    })
   })
   //editing the entries pool
   $("button[name='edit-entries-pool']").click(() => {
