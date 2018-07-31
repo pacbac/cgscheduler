@@ -119,6 +119,7 @@ div.remarks {
   color: white;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  text-transform: capitalize;
   font-family: Poppins;
   font-size: 20px;
   font-weight: 300; }
@@ -168,7 +169,7 @@ div.remarks {
     .save-btns button[name="save-tbl"] {
       background-color: #9e4f3f;
       display: none; }
-    .save-btns button[name="cancel"] {
+    .save-btns button[name="cancel"], .save-btns button[name="cancel-entries"] {
       background-color: #afafaf;
       display: none; }
     .save-btns button[name="edit-entries-pool"] {

@@ -74,6 +74,7 @@ h1.heading {
   color: white;
   overflow: hidden;
   box-shadow: 0 2px 4px $half-black;
+  text-transform: capitalize;
   font: {
     family: Poppins;
     size: 20px;
@@ -141,7 +142,7 @@ h1.heading {
       display: none;
     }
 
-    &[name="cancel"] {
+    &[name="cancel"], &[name="cancel-entries"] {
       background-color: #afafaf;
       display: none;
     }

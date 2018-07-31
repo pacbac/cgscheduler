@@ -10,7 +10,7 @@
     <h1 class="heading">Cell Group Schedule</h1>
     <div class="notebook">
       {% for category in categories %}
-        <div class="{{ category|lower }}">
+        <div class="{{ category }}">
           <div class="navbar">{{ category }}</div>
           <div class="info">
             {% for date in dates %}
@@ -33,6 +33,7 @@
       {% endfor %}
       <div class="save-btns">
         <button name="edit-entries-pool">Edit Entries Pool</button>
+        <button name="cancel-entries">Cancel Entries</button>
         <button type="submit" name="save-tbl">Save Table</button>
         <button name="cancel">Cancel</button>
       </div>
@@ -45,7 +46,6 @@
                 {{ entry }}<br>
               {% endfor %}
             </div>
-            <!-- <textarea class="entries-area"></textarea> -->
           </div>
         {% endfor %}
       </div>
