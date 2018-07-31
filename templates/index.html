@@ -37,10 +37,14 @@
         <button name="cancel">Cancel</button>
       </div>
       <div class="entries-pool">
-        {% for entry in entries %}
-          <div class="{% filter lower %}{{ entry }}{% endfilter %}-entries">
-            <h3>{{ entry }}</h3>
-            <div class="entries"></div>
+        {% for ctgry in entries %}
+          <div class="{{ ctgry }}-entries">
+            <h3>{{ ctgry }}</h3>
+            <div class="entries">
+              {% for entry in entries|get_item:ctgry %}
+                {{ entry }}<br>
+              {% endfor %}
+            </div>
             <!-- <textarea class="entries-area"></textarea> -->
           </div>
         {% endfor %}

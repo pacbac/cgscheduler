@@ -37,8 +37,8 @@ class TableEdit(models.Model):
 
 # Model for edits in the entry pool
 class EntryEdit(models.Model):
-    name = models.CharField(max_length=20) #name of person in entry
-    category = models.CharField(max_length=75) #what category they belong to
+    name = models.CharField(max_length=20, null=True) #name of person in entry
+    category = models.CharField(max_length=75, null=True) #what category they belong to
 
     def __str__(self):
-        return "%s %s" % (self.name, self.category)
+        return "%s: %s" % (self.category, self.name)

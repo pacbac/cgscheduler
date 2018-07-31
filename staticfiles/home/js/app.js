@@ -6,10 +6,10 @@ var dates = []; //list of dates on scheduler
 const categories = ['newDate', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks']
 var edits = {}; //list of edits to be sent to server
 var entries = {
-  place: new Set(),
-  moderator: new Set(),
-  children: new Set(),
-  youth: new Set()
+  place: {}, // these categories hold a hashset, with true = present, false = deleted
+  moderator: {},
+  children: {},
+  youth: {}
 }
 
 //override for convenient use
@@ -34,10 +34,14 @@ $(document).ready(function(){
     $(this).text($(this).text().trim())
   })
 
-  //populate the table with previously saved edits
-  categories.forEach(category => {
-    let datesWEdit = dates.filter(date => date in edits && category in edits[date])
-    datesWEdit.forEach((date, i) => $(`.dates .element${i+1}`).text(edits[date][category]))
+  $(".entries").each(function() {
+    $(this).html($(this).html().replace(/[ \n]/g, ""))
+  })
+
+  //populate entries object w/ previously saved entries
+  Object.keys(entries).forEach(ctgry => {
+    entrySet = $(`.${ctgry}-entries > .entries`).html().split("<br>").filter(name => name != "")
+    entrySet.forEach(entry => entries[ctgry][entry] = true)
   })
 });
 
@@ -92,7 +96,7 @@ function loadKeypressListeners() {
             edits[key]['newDate'] = newDate
           else
             edits[key] = { newDate }
-          $("button").show()
+          $("button[name='save-tbl'], button[name='cancel']").show()
         } else
           deleteObjProp(key, 'newDate')
           //if we wish to revert the date back to the auto-gen'd version, delete the edit data
@@ -117,7 +121,7 @@ function loadKeypressListeners() {
         edits[key] = { [category]: val }
 
       $(".edit-field").parent().html(val)
-      $("button").show() //show save button
+      $("button[name='save-tbl'], button[name='cancel']").show()
     }
   })
 }
@@ -131,24 +135,33 @@ function loadBtnListeners() {
     })
   })
 
+  $("button[name='cancel-entries']").click(() => {
+
+  })
   //editing the entries pool
   $("button[name='edit-entries-pool']").click(() => {
     if($("button[name='edit-entries-pool']").text() == "Edit Entries Pool"){
       $(".entries-pool > div").show()
+      $("button[name='cancel-entries']").show()
       $("button[name='edit-entries-pool']").text("Save Entries Pool")
     } else {
       $(".entries-pool > div").hide()
+      $("button[name='cancel-entries']").hide()
       $("button[name='edit-entries-pool']").text("Edit Entries Pool")
       Object.keys(entries)
-        .filter(key => $(`.${key}-entries > .entries`).has("textarea").length) //select only keys with a textarea
-        .forEach(key => {
+        .filter(catgry => $(`.${catgry}-entries > .entries`).has("textarea").length) //select only keys with a textarea
+        .forEach(ctgry => {
           //get entries from textarea, split elements by space or line break
-          let entriesArr = $(`.${key}-entries > .entries > textarea`).val().split("\n")
-          entries[key].clear()
-          entriesArr.forEach(entry => entries[key].add(entry))
-          if(entries[key].has("")) entries[key].delete("")
-          $(`.${key}-entries > .entries`).html(entriesArr.join("<br>"))
+          let entriesArr = $(`.${ctgry}-entries > .entries > textarea`).val().split("\n")
+          //change value of previous entries to false if they have been deleted
+          Object.keys(entries[ctgry]).forEach(oldEntry => entries[ctgry][oldEntry] = oldEntry in entriesArr)
+          entriesArr.forEach(entry => entries[ctgry][entry] = true) //append new values to entries[ctgry]
+          if("" in entries[ctgry]) delete entries[ctgry][""]
+          $(`.${ctgry}-entries > .entries`).html(entriesArr.join("<br>"))
         })
+      $.post('/updateentries', {entries}, json => {
+        alert(json)
+      })
     }
   })
 
@@ -187,7 +200,7 @@ function selectOnChanged() {
   if(!(key in edits)) edits[key] = {}
   edits[key][category] = val
   $(".edit-field").parent().html(val)
-  $("button").show()
+  $("button[name='save-tbl'], button[name='cancel']").show()
 }
 
 //each row (same date) cannot have duplicate values for: moderator & (youth | children)
@@ -218,8 +231,6 @@ function checkColErr(key, category, val){
 //avoid memory leaks by deleting useless object properties
 function deleteObjProp(key, category = undefined){
   if(key in edits){
-    if(category in edits[key])
-      delete edits[key][category]
     if(Object.keys(edits[key]).length === 0 && edits[key].constructor === Object)
       delete edits[key] //delete the parent object as well if it is now empty
   }

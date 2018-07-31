@@ -1,4 +1,4 @@
-from .date_utils import checkDateFormat, loadDates
+from .date_utils import loadDates
 import re
 
 SUBKEYS = {
@@ -20,7 +20,7 @@ def checkEditsKeys(keys):
         return False
 
 def checkEntriesKeys(keys):
-    return True
+    return keys[1] in SUBKEYS and keys[1] != 'newDate' and keys[1] != 'topic' and keys[1] != 'remarks'
 
 POSTTYPES = {
                 'edits': checkEditsKeys,
@@ -33,6 +33,6 @@ def splitKey(key):
 
 # validate that the splitted keys are in proper format
 def checkKeys(keys):
-    if len(keys) != 2 and len(keys) != 3: return False
+    if len(keys) != 3: return False
     if keys[0] not in POSTTYPES: return False
     return POSTTYPES[keys[0]](keys)
