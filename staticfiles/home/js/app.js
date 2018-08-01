@@ -258,6 +258,7 @@ function getKey() {
 }
 
 function checkDateFormat(str){
+  if(str.search(/[^0-9/]/) >= 0) return false
   let splitDate = str.split("/")
   if(splitDate.length != 3) return false
   let [month, day, year] = splitDate
