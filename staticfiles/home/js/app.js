@@ -53,12 +53,18 @@ function loadElemListeners() {
   $(".notebook > div:not(.youth):not(.children):not(.place):not(.moderator) .element").click(function() {
     if($(this).children("input").hasClass("edit-field")) return; //no need to retoggle same element clicked on
     else if($(".element").has(".edit-field").length){ //if edit-field already exists
-      let val = $(".edit-field").val()
-      $(".edit-field").parent().html(val)
+      var modStatus;
+      if(getCategory() == 'dates')
+        modStatus = dateModified()
+      else
+        modStatus = notDateModified()
+    } else
+      modStatus = true;
+    if(modStatus){
+      let val = $(this).text()
+      $(this).html("<input type='text' class='edit-field'>")
+      $(".edit-field").val(val)
     }
-    let val = $(this).text()
-    $(this).html("<input type='text' class='edit-field'>")
-    $(".edit-field").val(val)
   })
 
   /*
@@ -67,7 +73,16 @@ function loadElemListeners() {
   */
   $(".notebook > div:not(.dates):not(.topic):not(.remarks) .element").click(function() {
     if($(this).children("select").hasClass("edit-field")) return; //no need to retoggle same element clicked on
-    else if($(".element").has(".edit-field").length){ //if edit-field already exists
+    else if($(".element").has("input.edit-field").length){ //if edit-field already exists
+      var modStatus;
+      if(getCategory() == 'dates')
+        modStatus = dateModified()
+      else
+        modStatus = notDateModified()
+      if(!modStatus) return
+      let val = $(".edit-field").val()
+      $(".edit-field").parent().html(val)
+    } else if($(".element").has("select.edit-field").length){
       let val = $(".edit-field").val()
       $(".edit-field").parent().html(val)
     }
@@ -87,23 +102,8 @@ function loadElemListeners() {
 function loadKeypressListeners() {
   //attempt to save date when user presses enter
   $(document).on("keypress", ".dates input.edit-field", e => {
-    if(e.which == 13){
-      if(checkDateFormat($(".edit-field").val())){
-        let key = getKey()
-        let newDate = $(".edit-field").val()
-        if(newDate != key){
-          if(key in edits)
-            edits[key]['newDate'] = newDate
-          else
-            edits[key] = { newDate }
-          $("button[name='save-tbl'], button[name='cancel']").show()
-        } else
-          deleteObjProp(key, 'newDate')
-          //if we wish to revert the date back to the auto-gen'd version, delete the edit data
-        $(".edit-field").parent().html(newDate)
-      } else
-        alert("Error: Enter a valid date")
-    }
+    if(e.which == 13)
+      dateModified()
   })
 
   /*
@@ -111,18 +111,8 @@ function loadKeypressListeners() {
     the arrow MUST ALWAYS be there or else grandchildren+ will have unexpected behavior!
   */
   $(document).on("keypress", ".notebook > div:not(.dates) input.edit-field", e => {
-    if(e.which == 13){
-      let val = $(".edit-field").val()
-      let key = getKey()
-      let category = getCategory()
-      if(key in edits)
-        edits[key][category] = val
-      else
-        edits[key] = { [category]: val }
-
-      $(".edit-field").parent().html(val)
-      $("button[name='save-tbl'], button[name='cancel']").show()
-    }
+    if(e.which == 13)
+      notDateModified()
   })
 }
 
@@ -180,6 +170,43 @@ function loadBtnListeners() {
       $(this).html(`<textarea class="entries-area">${$(this).html().replace(/<br>/g, "\n")}</textarea>`)
       // /<br>/g supports replacement of all line breaks, instead of just the first instance
   })
+}
+
+//response for modification of text field in date category
+function dateModified(){
+  if(checkDateFormat($(".edit-field").val())){
+    let key = getKey()
+    let newDate = $(".edit-field").val()
+    if(newDate != key){
+      if(key in edits)
+        edits[key]['newDate'] = newDate
+      else
+        edits[key] = { newDate }
+      $("button[name='save-tbl'], button[name='cancel']").show()
+    } else
+      deleteObjProp(key, 'newDate')
+      //if we wish to revert the date back to the auto-gen'd version, delete the edit data
+    $(".edit-field").parent().html(newDate)
+    return true
+  } else{
+    alert("Error: Enter a valid date")
+    return false
+  }
+}
+
+//response for modification of other non-date textfield categories
+function notDateModified(){
+  let val = $(".edit-field").val()
+  let key = getKey()
+  let category = getCategory()
+  if(key in edits)
+    edits[key][category] = val
+  else
+    edits[key] = { [category]: val }
+
+  $(".edit-field").parent().html(val)
+  $("button[name='save-tbl'], button[name='cancel']").show()
+  return true //non-date text fields have no rules
 }
 
 //listener callback for <select>
