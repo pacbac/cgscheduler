@@ -89,7 +89,7 @@ function loadElemListeners() {
     let val = $(this).text()
     let category = $(this).parent().parent().attr("class") //category the clicked object is from
     //create <select> dropdown as an edit field from the set of entries
-    let entryHTML = Array.from(entries[category])
+    let entryHTML = Object.keys(entries[category])
                           .reduce((total, entry) => `${total}<option value=${entry}>${entry}</option>`
                                               , "<select class='edit-field' onchange='selectOnChanged()'>")
     entryHTML += "<option value=''></option>"
