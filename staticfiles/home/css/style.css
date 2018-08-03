@@ -106,7 +106,8 @@ div.remarks {
   background-color: #efeded;
   flex-grow: 1;
   flex-basis: 10%;
-  flex-grow: 2 !important; }
+  flex-basis: 20%;
+  flex-grow: 3 !important; }
 
 .navbar {
   height: 42px;
@@ -158,10 +159,20 @@ div.remarks {
     .element input.edit-field:focus {
       outline: none; }
 
-.save-btns {
+.save-options {
   flex-basis: 100%;
+  display: flex; }
+  .save-options h3 {
+    width: 50%;
+    flex-grow: 1;
+    justify-content: flex-start;
+    font-family: Poppins;
+    font-size: 16px; }
+
+.save-btns {
   display: flex;
-  justify-content: flex-end; }
+  justify-content: flex-end;
+  flex-grow: 1; }
   .save-btns button {
     padding: 0 10px;
     margin-top: 20px;
