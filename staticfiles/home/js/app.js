@@ -170,12 +170,11 @@ function postSendStatus(json){
   json = JSON.parse(json)
   let $msg = $(".save-options > h3")
   let keys = Object.keys(json)
-  if(keys.length === 2){
+  if(keys.length === 0 && json.constructor == Object){
     $msg.css("color", darkGreen)
     $msg.text("Posted to database successfully.")
     setTimeout(() => $msg.text(""), 3000)
   } else {
-    console.log(json, Object.keys(json))
     //print server error message with a list of the slots that don't work
     let msgText = keys.reduce((total, elem) => elem + ", ", "At ")
     msgText = msgText.substr(0, msgText.length - 2) //take away the last comma
