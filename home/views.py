@@ -30,7 +30,8 @@ def updateEdits(request):
     for key in POST.keys():
         # splitKey is always in the form ('edits', 'dateIndex', 'category')
         splitKeys = tuple(key_utils.splitKey(key))
-        if key_utils.checkKeys(splitKeys):
+        if (key_utils.checkKeys(splitKeys) and
+            not (splitKeys[2] == 'newDate' and not date_utils.checkDateFormat(POST[key]))): #value checked for invalid date formats
             origDate = date_utils.loadDates()[int(splitKeys[1])]
             edit = TableEdit.objects.filter(date__startswith=date_utils.strToDate(origDate))
             if not edit.exists():

@@ -1,7 +1,6 @@
 //import { csrftoken, csrfSafeMethod } from './cookie.js'
-
-const today = new Date();
-const startDate = new Date(today.getFullYear(), 0, 1)
+const darkGreen = "#027517";
+const darkRed = "#9e4f3f";
 var dates = []; //list of dates on scheduler
 const categories = ['newDate', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks']
 var edits = {}; //list of edits to be sent to server
@@ -119,10 +118,7 @@ function loadKeypressListeners() {
 function loadBtnListeners() {
   $("button[name='cancel']").click(() => location.reload())
   $("button[name='save-tbl']").click(() => {
-    $.post('/updateedits', {edits}, json => {
-      console.log("Posted!") //temp notif
-      alert(json)
-    })
+    $.post('/updateedits', {edits}, postSendStatus) //update success/fail message after saving table
   })
 
   $("button[name='cancel-entries']").click(() => {
@@ -158,9 +154,7 @@ function loadBtnListeners() {
           if("" in entries[ctgry]) delete entries[ctgry][""]
           $(`.${ctgry}-entries > .entries`).html(entriesArr.join("<br>"))
         })
-      $.post('/updateentries', {entries}, json => {
-        alert(json)
-      })
+      $.post('/updateentries', {entries}, postSendStatus) //update success/fail message after saving entries pool
     }
   })
 
@@ -170,6 +164,25 @@ function loadBtnListeners() {
       $(this).html(`<textarea class="entries-area">${$(this).html().replace(/<br>/g, "\n")}</textarea>`)
       // /<br>/g supports replacement of all line breaks, instead of just the first instance
   })
+}
+
+function postSendStatus(json){
+  json = JSON.parse(json)
+  let $msg = $(".save-options > h3")
+  let keys = Object.keys(json)
+  if(keys.length === 2){
+    $msg.css("color", darkGreen)
+    $msg.text("Posted to database successfully.")
+    setTimeout(() => $msg.text(""), 3000)
+  } else {
+    console.log(json, Object.keys(json))
+    //print server error message with a list of the slots that don't work
+    let msgText = keys.reduce((total, elem) => elem + ", ", "At ")
+    msgText = msgText.substr(0, msgText.length - 2) //take away the last comma
+    msgText += ": "+json[keys[0]]
+    $msg.css("color", darkRed)
+    $msg.text(msgText)
+  }
 }
 
 //response for modification of text field in date category
