@@ -2,9 +2,14 @@
 
 <html>
   {% load dict_extras %}
+  {% load static %}
   <head>
     <title>Cell Group Schedule</title>
     {% include "links.html" %}
+    {% if request.path == "/edit" %}
+      <script src='{% static "home/js/cookie.js" %}'></script>
+      <script src='{% static "home/js/app.js" %}'></script>
+    {% endif %}
   </head>
   <body>
     <h1 class="heading">Cell Group Schedule</h1>
@@ -31,15 +36,17 @@
           </div>
         </div>
       {% endfor %}
-      <div class="save-options">
-        <h3></h3>
-        <div class="save-btns">
-          <button name="edit-entries-pool">Edit Entries Pool</button>
-          <button name="cancel-entries">Cancel Entries</button>
-          <button type="submit" name="save-tbl">Save Table</button>
-          <button name="cancel">Cancel</button>
+      {% if request.path == "/edit" %}
+        <div class="save-options">
+          <h3></h3>
+          <div class="save-btns">
+            <button name="edit-entries-pool">Edit Entries Pool</button>
+            <button name="cancel-entries">Cancel Entries</button>
+            <button type="submit" name="save-tbl">Save Table</button>
+            <button name="cancel">Cancel</button>
+          </div>
         </div>
-      </div>
+      {% endif %}
       <div class="entries-pool">
         {% for ctgry in entries %}
           <div class="{{ ctgry }}-entries">
