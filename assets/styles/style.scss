@@ -60,7 +60,8 @@ h1.heading {
       flex-grow: 3 !important;
       flex-basis: 30% !important;
     } @else if $category == 'remarks' {
-      flex-grow: 2 !important;
+      flex-basis: 20%;
+      flex-grow: 3 !important;
     }
   }
 }
@@ -126,10 +127,24 @@ h1.heading {
   }
 }
 
-.save-btns {
+.save-options {
   flex-basis: 100%;
   display: flex;
+  h3 {
+    width: 50%;
+    flex-grow: 1;
+    justify-content: flex-start;
+    font: {
+      family: Poppins;
+      size: 16px;
+    }
+  }
+}
+
+.save-btns {
+  display: flex;
   justify-content: flex-end;
+  flex-grow: 1;
 
   button {
     @extend %button;
