@@ -4,8 +4,9 @@ from utils import date_utils, key_utils, db_utils
 import datetime
 import json
 from .models import TableEdit, EntryEdit
+from django.views.decorators.csrf import ensure_csrf_cookie
 
-# Create your views here.
+@ensure_csrf_cookie
 def index(request):
     beginYear = datetime.date(datetime.date.today().year, 1, 1)
     context = {
