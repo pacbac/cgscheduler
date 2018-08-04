@@ -1,6 +1,6 @@
 # CGScheduler
 
-A straightforward scheduling web app for my cell group. The scheduler is essentially an upgrade to a standard Excel/GSheets table with some added rules to if entries are valid to save the moderator some headaches. The moderator will have private access to the edits page (the addresses for edits used in the live page are different from the one in the repo), while everyone else will just see the read-only table.
+A straightforward scheduling web app for my cell group. The scheduler is essentially a custom Excel/GSheets table with some added rules to check if entries are valid to save the moderator some headaches. There are 2 groups of people who use this together. The moderators should have private access to the edits page (the addresses for edits used in the live page are different from the one in the repo), while everyone else will just see the read-only table.
 
 ## Getting Started
 
