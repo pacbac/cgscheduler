@@ -118,6 +118,10 @@ function loadKeypressListeners() {
 function loadBtnListeners() {
   $("button[name='cancel']").click(() => location.reload())
   $("button[name='save-tbl']").click(() => {
+    if($(".edit-field").length){ //add anything currently being edited to the edits object
+      if(!(getKey() in edits)) edits[getKey()] = {}
+      edits[getKey()][getCategory()] = $(".edit-field").val()
+    }
     $.post('/updateedits', {edits}, postSendStatus) //update success/fail message after saving table
   })
 
