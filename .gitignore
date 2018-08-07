@@ -7,3 +7,4 @@ db.sqlite3
 media
 entryrules.txt
 .env
+env
