@@ -35,6 +35,15 @@ class TableEdit(models.Model):
         if self.remarks: d['remarks'] = self.remarks
         return d
 
+    def isEmpty(self): #returns true if all fields excluding "date" is None
+        return (self.correctDate is None
+            and self.place is None
+            and self.moderator is None
+            and self.topic is None
+            and self.youth is None
+            and self.children is None
+            and self.remarks is None)
+
 # Model for edits in the entry pool
 class EntryEdit(models.Model):
     name = models.CharField(max_length=20, null=True) #name of person in entry

@@ -43,11 +43,15 @@ def updateEdits(request):
                     db_utils.INSTCATGRIES[splitKeys[2]](edit, POST[key])
                     print("New table entry saved: (%s)" % str(edit))
             else:
+                logStr = "Table entry modified: (%s)" % str(edit[0])
                 if (splitKeys[2] == 'newDate' and origDate == POST[key]) or (splitKeys[2] != 'newDate' and POST[key] == ""):
                     db_utils.CATGRIES[splitKeys[2]](edit, None)
+                    if edit[0].isEmpty():
+                        edit.delete()
+                        logStr = "Table entry deleted: (%s)" % origDate
                 else:
                     db_utils.CATGRIES[splitKeys[2]](edit, POST[key]) # each entry has varied properties
-                print("Table entry modified: (%s)" % str(edit[0]))
+                print(logStr)
         else:
             response[key] = "Error: Could not post to server due to improper formatting"
     return HttpResponse(json.dumps(response))
@@ -66,7 +70,7 @@ def updateEntries(request):
                 entry.save()
                 print("New entry saved: (%s)" % str(entry))
             elif entry.exists() and not boolVal: #delete an existing object
-                entry.update(name=None, category=None)
+                entry.delete()
                 print("Deleted object: (%s, %s)" % (splitKeys[1], splitKeys[2]))
         else:
             response[key] = "Error: Could not post to server due to improper formatting"
