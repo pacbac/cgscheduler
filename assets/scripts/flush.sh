@@ -1,3 +1,5 @@
+#script to flush database annually to avoid mem leaks
+
 today=`date +%m%d`
 newyears=`date --date="01/01" +%m%d`
 
