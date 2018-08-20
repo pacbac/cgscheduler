@@ -22,7 +22,7 @@ def index(request):
 
     for yr in tabs:
         for ctgry in context['entries'][yr]:
-            for entry in EntryEdit.objects.filter(category=ctgry):
+            for entry in EntryEdit.objects.filter(yr=int(yr), category=ctgry):
                 context['entries'][yr][ctgry].append(entry.name)
 
     return render(request, 'index.html', context)

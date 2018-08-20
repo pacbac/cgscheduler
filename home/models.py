@@ -46,8 +46,9 @@ class TableEdit(models.Model):
 
 # Model for edits in the entry pool
 class EntryEdit(models.Model):
+    yr = models.IntegerField(default=datetime.date.today().year)
     name = models.CharField(max_length=20, null=True) #name of person in entry
     category = models.CharField(max_length=75, null=True) #what category they belong to
 
     def __str__(self):
-        return "%s: %s" % (self.category, self.name)
+        return "%s, %s: %s" % (self.yr, self.category, self.name)
