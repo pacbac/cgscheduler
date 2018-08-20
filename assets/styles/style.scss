@@ -49,6 +49,7 @@ h1.heading {
     @include dimensions(150px, $height);
     @include textCenter($height);
 
+    margin-right: 2px;
     border-radius: 20px 20px 0 0;
     background-color: white;
     cursor: pointer;
@@ -77,7 +78,7 @@ h1.heading {
   flex-wrap: wrap;
 
   &:not(.selected-notebook) {
-    display: none; 
+    display: none;
   }
 }
 

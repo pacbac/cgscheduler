@@ -4,8 +4,18 @@ const darkGreen = "#027517";
 const darkRed = "#9e4f3f";
 var dates = []; //list of dates on scheduler
 const categories = ['newDate', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks']
-var edits = Array.from({length: 3}, elem => ({})); //list of edits to be sent to server
-var entries = {}
+var edits = {} //list of edits to be sent to server
+var entries = {} //entry pool
+
+for(let i = -1; i < 2; i++){
+  edits[thisYear+i] = {}
+  entries[thisYear+i] = { // hold entry pool for each year
+    place: {}, // these categories hold a hashset, with true = present, false = deleted
+    moderator: {},
+    children: {},
+    youth: {}
+  }
+}
 
 //override for convenient use
 Date.prototype.toString = function() {
@@ -13,15 +23,6 @@ Date.prototype.toString = function() {
 }
 
 $(document).ready(function(){
-  for(let i = -1; i < 2; i++){
-    entries[thisYear-1] = { // hold entries for each table
-      place: {}, // these categories hold a hashset, with true = present, false = deleted
-      moderator: {},
-      children: {},
-      youth: {}
-    }
-  }
-
   loadElemListeners();
   loadKeypressListeners();
   loadBtnListeners();
@@ -43,13 +44,25 @@ $(document).ready(function(){
   })
 
   //populate entries object w/ previously saved entries
-  Object.keys(entries).forEach(ctgry => {
-    entrySet = $(`.${ctgry}-entries > .entries`).html().split("<br>").filter(name => name != "")
-    entrySet.forEach(entry => entries[ctgry][entry] = true)
+  Object.keys(entries).forEach(yr => {
+    Object.keys(entries[yr]).forEach(ctgry => {
+      let entrySet = $(`#${yr}-notebook .${ctgry}-entries > .entries`).html().split("<br>").filter(name => name != "")
+      entrySet.forEach(entry => entries[yr][ctgry][entry] = true)
+    })
   })
 });
 
 function loadElemListeners() {
+
+  $(".yr-lbl").click(function() {
+    $(".selected-yr").removeClass("selected-yr")
+    $(this).addClass("selected-yr")
+    $(".selected-notebook").hide()
+    $(".selected-notebook").removeClass("selected-notebook")
+    $(`#${$(this).text().trim()}-notebook`).addClass("selected-notebook")
+    $(".selected-notebook").show()
+  })
+
   /*
     toggle text field on manual text entry elements
     the arrow MUST ALWAYS be there or else grandchildren+ will have unexpected behavior!
@@ -132,9 +145,10 @@ function loadBtnListeners() {
 
   $("button[name='cancel-entries']").click(() => {
     $(".entries-pool > div").each(function(){
+      let yr = $(".selected-yr").text().trim()
       let type = $(this).attr("class")
       type = type.substring(0, type.indexOf("-")) // extract the ${ctgry} part of the class name
-      let oldHTML = Object.keys(entries[type]).reduce((total, entry) => total + entry + "<br>", "")
+      let oldHTML = Object.keys(entries[yr][type]).reduce((total, entry) => total + entry + "<br>", "")
       oldHTML = oldHTML.substring(0, oldHTML.length - 4) // remove the last <br>, which is length 4
       $(this).children(".entries").html(oldHTML)
       $(this).hide()
@@ -143,15 +157,15 @@ function loadBtnListeners() {
     })
   })
   //editing the entries pool
-  $("button[name='edit-entries-pool']").click(() => {
-    if($("button[name='edit-entries-pool']").text() == "Edit Entries Pool"){
+  $("button[name='edit-entries-pool']").click(function() {
+    if($(this).text() == "Edit Entries Pool"){
       $(".entries-pool > div").show()
-      $("button[name='cancel-entries']").show()
-      $("button[name='edit-entries-pool']").text("Save Entries Pool")
+      $(this).siblings("button[name='cancel-entries']").show()
+      $(this).text("Save Entries Pool")
     } else {
       $(".entries-pool > div").hide()
-      $("button[name='cancel-entries']").hide()
-      $("button[name='edit-entries-pool']").text("Edit Entries Pool")
+      $(this).siblings("button[name='cancel-entries']").hide()
+      $(this).text("Edit Entries Pool")
       Object.keys(entries)
         .filter(catgry => $(`.${catgry}-entries > .entries`).has("textarea").length) //select only keys with a textarea
         .forEach(ctgry => {
@@ -161,7 +175,7 @@ function loadBtnListeners() {
           Object.keys(entries[ctgry]).forEach(oldEntry => entries[ctgry][oldEntry] = oldEntry in entriesArr)
           entriesArr.forEach(entry => entries[ctgry][entry] = true) //append new values to entries[ctgry]
           if("" in entries[ctgry]) delete entries[ctgry][""]
-          $(`.${ctgry}-entries > .entries`).html(entriesArr.join("<br>"))
+          $(this).parent().parent().siblings(`.${ctgry}-entries`).children(".entries").html(entriesArr.join("<br>"))
         })
       $.post('/updateentries', {entries}, postSendStatus) //update success/fail message after saving entries pool
     }
