@@ -34,10 +34,40 @@ h1.heading {
   padding-top: 10px;
 }
 
-.notebook {
-  @include border(none, black, 1px, 10px);
+.center-content {
   margin: 2% auto 4% auto;
   width: 85%;
+  position: relative;
+}
+
+.yr-tabs {
+  padding-left: 10px;
+  display: flex;
+
+  > .yr-lbl {
+    $height: 50px;
+    @include dimensions(150px, $height);
+    @include textCenter($height);
+
+    border-radius: 20px 20px 0 0;
+    background-color: white;
+    cursor: pointer;
+    font: {
+      family: Poppins;
+      size: 30px;
+    }
+  }
+
+  > .selected-yr {
+    background-color: $dark-green;
+    color: white;
+  }
+}
+
+.notebook {
+  @include border(none, black, 1px, 10px);
+  margin: 0;
+  width: 100%;
   min-height: 150px;
   color: white;
   background-color: $darkish-white;
@@ -45,6 +75,10 @@ h1.heading {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+
+  &:not(.selected-notebook) {
+    display: none; 
+  }
 }
 
 @each $category in $categories {

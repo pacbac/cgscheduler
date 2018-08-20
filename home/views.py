@@ -8,18 +8,19 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 
 @ensure_csrf_cookie
 def index(request):
-    beginYear = datetime.date(datetime.date.today().year, 1, 1)
+    thisYear = datetime.date.today().year
+    newYearDate = datetime.date(thisYear, 1, 1)
+    tableedits = TableEdit.objects.filter(date__gte=newYearDate)
+    tabs = [ str(thisYear+yr) for yr in range(-1, 2) ]
     context = {
         'categories': ['dates', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks'],
-        'entries': {'place': [], 'moderator': [], 'children': [], 'youth': []},
-        'dates': date_utils.loadDates(beginYear),
-        'edits': {},
+        'dates': { yr: date_utils.loadDates(startdate=datetime.date(int(yr), 1, 1)) for yr in tabs },
+        'edits': { tab: { date_utils.dateToStr(edit.date): edit.toDict() for edit in tableedits } for tab in tabs }, # key: date in mm/dd/yyyy, value: table edit db obj
+        'tabs': tabs,
+        'entries': { tab: {'place': [], 'moderator': [], 'children': [], 'youth': []} for tab in tabs }
     }
-    tableedits = TableEdit.objects.filter(date__gte=beginYear)
-    for edit in tableedits:
-        context['edits'][date_utils.dateToStr(edit.date)] = edit.toDict()
 
-    for ctgry in context['entries']:
+    for ctgry in context['entries']                                                                                     :
         for entry in EntryEdit.objects.filter(category=ctgry):
             context['entries'][ctgry].append(entry.name)
     return render(request, 'index.html', context)

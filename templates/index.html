@@ -12,53 +12,65 @@
     {% endif %}
   </head>
   <body>
+    {% now "Y" as selectedYr %} {# selectedYr is a string #}
     <h1 class="heading">Cell Group Schedule</h1>
-    <div class="notebook">
-      {% for category in categories %}
-        <div class="{{ category }}">
-          <div class="navbar">{{ category }}</div>
-          <div class="info">
-            {% for date in dates %}
-              <div class="element element{{ forloop.counter0 }}">
-                {% if category == "dates" %}
-                  {% if date in edits and "newDate" in edits|get_item:date %}
-                    {{ edits|get_item:date|get_item:"newDate" }}
-                  {% else %}
-                    {{ date }}
-                  {% endif %}
-                {% else %}
-                  {% if date in edits and category in edits|get_item:date %}
-                    {{ edits|get_item:date|get_item:category }}
-                  {% endif %}
-                {% endif %}
+    <div class="center-content">
+      <div class="yr-tabs">
+        {% for yr in tabs %}
+          <div class="{% if yr == selectedYr %}selected-yr{% endif %} yr-lbl">
+            {{ yr }}
+          </div>
+        {% endfor %}
+      </div>
+      {% for yr in tabs %}
+        <div class="notebook {% if yr == selectedYr %}selected-notebook{% endif %}" id="{{ yr }}-notebook">
+          {% for category in categories %}
+            <div class="{{ category }}">
+              <div class="navbar">{{ category }}</div>
+              <div class="info">
+                {% for date in dates|get_item:yr %}
+                  <div class="element element{{ forloop.counter0 }}">
+                    {% if category == "dates" %}
+                      {% if date in edits|get_item:yr and "newDate" in edits|get_item:yr|get_item:date %}
+                        {{ edits|get_item:yr|get_item:date|get_item:"newDate" }}
+                      {% else %}
+                        {{ date }}
+                      {% endif %}
+                    {% else %}
+                      {% if date in edits|get_item:yr and category in edits|get_item:yr|get_item:date %}
+                        {{ edits|get_item:yr|get_item:date|get_item:category }}
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+          {% if request.path == "/edit" %}
+            <div class="save-options">
+              <h3></h3>
+              <div class="save-btns">
+                <button name="edit-entries-pool">Edit Entries Pool</button>
+                <button name="cancel-entries">Cancel Entries</button>
+                <button type="submit" name="save-tbl">Save Table</button>
+                <button name="cancel">Cancel</button>
+              </div>
+            </div>
+          {% endif %}
+          <div class="entries-pool">
+            {% for ctgry in entries|get_item:yr %}
+              <div class="{{ ctgry }}-entries">
+                <h3>{{ ctgry }}</h3>
+                <div class="entries">
+                  {% for entry in entries|get_item:yr|get_item:ctgry %}
+                    {{ entry }}<br>
+                  {% endfor %}
+                </div>
               </div>
             {% endfor %}
           </div>
         </div>
       {% endfor %}
-      {% if request.path == "/edit" %}
-        <div class="save-options">
-          <h3></h3>
-          <div class="save-btns">
-            <button name="edit-entries-pool">Edit Entries Pool</button>
-            <button name="cancel-entries">Cancel Entries</button>
-            <button type="submit" name="save-tbl">Save Table</button>
-            <button name="cancel">Cancel</button>
-          </div>
-        </div>
-      {% endif %}
-      <div class="entries-pool">
-        {% for ctgry in entries %}
-          <div class="{{ ctgry }}-entries">
-            <h3>{{ ctgry }}</h3>
-            <div class="entries">
-              {% for entry in entries|get_item:ctgry %}
-                {{ entry }}<br>
-              {% endfor %}
-            </div>
-          </div>
-        {% endfor %}
-      </div>
     </div>
   </body>
   <!-- <footer>

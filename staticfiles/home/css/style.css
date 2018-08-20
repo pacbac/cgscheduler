@@ -34,13 +34,36 @@ h1.heading {
   border-bottom-right-radius: 20px;
   padding-top: 10px; }
 
+.center-content {
+  margin: 2% auto 4% auto;
+  width: 85%;
+  position: relative; }
+
+.yr-tabs {
+  padding-left: 10px;
+  display: flex; }
+  .yr-tabs > .yr-lbl {
+    width: 150px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 20px 20px 0 0;
+    background-color: white;
+    cursor: pointer;
+    font-family: Poppins;
+    font-size: 30px; }
+  .yr-tabs > .selected-yr {
+    background-color: #027517;
+    color: white; }
+
 .notebook {
   border-style: none;
   border-color: black;
   border-width: 1px;
   border-radius: 10px;
-  margin: 2% auto 4% auto;
-  width: 85%;
+  margin: 0;
+  width: 100%;
   min-height: 150px;
   color: white;
   background-color: #efeded;
@@ -48,6 +71,8 @@ h1.heading {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap; }
+  .notebook:not(.selected-notebook) {
+    display: none; }
 
 div.dates {
   margin: 0;

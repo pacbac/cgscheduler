@@ -1,15 +1,11 @@
 //import { csrftoken, csrfSafeMethod } from './cookie.js'
+const thisYear = new Date().getFullYear()
 const darkGreen = "#027517";
 const darkRed = "#9e4f3f";
 var dates = []; //list of dates on scheduler
 const categories = ['newDate', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks']
-var edits = {}; //list of edits to be sent to server
-var entries = {
-  place: {}, // these categories hold a hashset, with true = present, false = deleted
-  moderator: {},
-  children: {},
-  youth: {}
-}
+var edits = Array.from({length: 3}, elem => ({})); //list of edits to be sent to server
+var entries = {}
 
 //override for convenient use
 Date.prototype.toString = function() {
@@ -17,6 +13,15 @@ Date.prototype.toString = function() {
 }
 
 $(document).ready(function(){
+  for(let i = -1; i < 2; i++){
+    entries[thisYear-1] = { // hold entries for each table
+      place: {}, // these categories hold a hashset, with true = present, false = deleted
+      moderator: {},
+      children: {},
+      youth: {}
+    }
+  }
+
   loadElemListeners();
   loadKeypressListeners();
   loadBtnListeners();
