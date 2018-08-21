@@ -2,7 +2,6 @@
 const thisYear = new Date().getFullYear()
 const darkGreen = "#027517";
 const darkRed = "#9e4f3f";
-var dates = []; //list of dates on scheduler
 const categories = ['newDate', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks']
 var edits = {} //list of edits to be sent to server
 var entries = {} //entry pool
@@ -147,10 +146,11 @@ function loadBtnListeners() {
   $("button[name='cancel']").click(() => location.reload())
   $("button[name='save-tbl']").click(() => {
     if($(".edit-field").length){ //add anything currently being edited to the edits object
-      let key = getKey()
+      let [key, ctgry] = [getKey(), getCategory()]
+      if(ctgry == "dates") ctgry = "newDate"
       let yr = getYr()
       if(!(key in edits[yr])) edits[yr][key] = {}
-      edits[yr][key][getCategory()] = $(".edit-field").val()
+      edits[yr][key][ctgry] = $(".edit-field").val()
     }
     $.post('/updateedits', {edits}, postSendStatus) //update success/fail message after saving table
   })
@@ -229,6 +229,7 @@ function dateModified(){
   if(checkDateFormat($(".edit-field").val())){
     let key = getKey()
     let newDate = $(".edit-field").val()
+    let yr = getYr()
     if(newDate != key){
       if(key in edits[yr])
         edits[yr][key]['newDate'] = newDate
