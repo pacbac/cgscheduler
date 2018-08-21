@@ -1,5 +1,5 @@
 from .date_utils import loadDates
-import re
+import re, datetime
 
 SUBKEYS = {
                 'newDate': True,
@@ -13,14 +13,14 @@ SUBKEYS = {
 
 def checkEditsKeys(keys):
     try:
-        dateIndex = int(keys[1])
+        dateIndex = int(keys[2])
         if dateIndex < 0 or dateIndex >= len(loadDates()): return False
-        return keys[2] in SUBKEYS
+        return keys[3] in SUBKEYS
     except:
         return False
 
 def checkEntriesKeys(keys):
-    return keys[1] in SUBKEYS and keys[1] != 'newDate' and keys[1] != 'topic' and keys[1] != 'remarks'
+    return keys[2] in SUBKEYS and keys[2] != 'newDate' and keys[2] != 'topic' and keys[2] != 'remarks'
 
 POSTTYPES = {
                 'edits': checkEditsKeys,
@@ -33,6 +33,12 @@ def splitKey(key):
 
 # validate that the splitted keys are in proper format
 def checkKeys(keys):
-    if len(keys) != 3: return False
+    if len(keys) != 4: return False
+    try:
+        yr = int(keys[1]) # catch potential type error parsing to int
+        thisYear = datetime.date.today().year
+        if yr < thisYear - 1 or yr > thisYear + 1: return False
+    except:
+        return False
     if keys[0] not in POSTTYPES: return False
     return POSTTYPES[keys[0]](keys)

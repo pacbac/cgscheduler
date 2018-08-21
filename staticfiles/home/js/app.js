@@ -54,13 +54,22 @@ $(document).ready(function(){
 
 function loadElemListeners() {
 
+  // behavior navigating tabs
   $(".yr-lbl").click(function() {
+    let displayBtns = $(".selected-notebook .entries-pool > div").css('display') == 'none'
     $(".selected-yr").removeClass("selected-yr")
     $(this).addClass("selected-yr")
     $(".selected-notebook").hide()
     $(".selected-notebook").removeClass("selected-notebook")
-    $(`#${$(this).text().trim()}-notebook`).addClass("selected-notebook")
+    $(`#${getYr()}-notebook`).addClass("selected-notebook")
     $(".selected-notebook").show()
+    if(!displayBtns){
+      $(`#${getYr()}-notebook button[name='cancel-entries']`).show()
+      $(`#${getYr()}-notebook button[name='edit-entries-pool']`).text("Save Entries Pool")
+    } else {
+      $(`#${getYr()}-notebook button[name='cancel-entries']`).hide()
+      $(`#${getYr()}-notebook button[name='edit-entries-pool']`).text("Edit Entries Pool")
+    }
   })
 
   /*
@@ -103,10 +112,11 @@ function loadElemListeners() {
       let val = $(".edit-field").val()
       $(".edit-field").parent().html(val)
     }
+    let yr = getYr()
     let val = $(this).text()
     let category = $(this).parent().parent().attr("class") //category the clicked object is from
     //create <select> dropdown as an edit field from the set of entries
-    let entryHTML = Object.keys(entries[category])
+    let entryHTML = Object.keys(entries[yr][category])
                           .reduce((total, entry) => `${total}<option value=${entry}>${entry}</option>`
                                               , "<select class='edit-field' onchange='selectOnChanged()'>")
     entryHTML += "<option value=''></option>"
@@ -137,15 +147,17 @@ function loadBtnListeners() {
   $("button[name='cancel']").click(() => location.reload())
   $("button[name='save-tbl']").click(() => {
     if($(".edit-field").length){ //add anything currently being edited to the edits object
-      if(!(getKey() in edits)) edits[getKey()] = {}
-      edits[getKey()][getCategory()] = $(".edit-field").val()
+      let key = getKey()
+      let yr = getYr()
+      if(!(key in edits[yr])) edits[yr][key] = {}
+      edits[yr][key][getCategory()] = $(".edit-field").val()
     }
     $.post('/updateedits', {edits}, postSendStatus) //update success/fail message after saving table
   })
 
   $("button[name='cancel-entries']").click(() => {
     $(".entries-pool > div").each(function(){
-      let yr = $(".selected-yr").text().trim()
+      let yr = getYr()
       let type = $(this).attr("class")
       type = type.substring(0, type.indexOf("-")) // extract the ${ctgry} part of the class name
       let oldHTML = Object.keys(entries[yr][type]).reduce((total, entry) => total + entry + "<br>", "")
@@ -166,17 +178,22 @@ function loadBtnListeners() {
       $(".entries-pool > div").hide()
       $(this).siblings("button[name='cancel-entries']").hide()
       $(this).text("Edit Entries Pool")
-      Object.keys(entries)
-        .filter(catgry => $(`.${catgry}-entries > .entries`).has("textarea").length) //select only keys with a textarea
-        .forEach(ctgry => {
-          //get entries from textarea, split elements by space or line break
-          let entriesArr = $(`.${ctgry}-entries > .entries > textarea`).val().split("\n")
-          //change value of previous entries to false if they have been deleted
-          Object.keys(entries[ctgry]).forEach(oldEntry => entries[ctgry][oldEntry] = oldEntry in entriesArr)
-          entriesArr.forEach(entry => entries[ctgry][entry] = true) //append new values to entries[ctgry]
-          if("" in entries[ctgry]) delete entries[ctgry][""]
-          $(this).parent().parent().siblings(`.${ctgry}-entries`).children(".entries").html(entriesArr.join("<br>"))
-        })
+
+      Object.keys(entries).forEach(yr => {
+        var currEntries = entries[yr]
+        Object.keys(currEntries)
+          .filter(ctgry => $(`#${yr}-notebook .${ctgry}-entries > .entries`).has("textarea").length) //select only keys with a textarea
+          .forEach(ctgry => {
+            //get entries from textarea, split elements by space or line break
+            let entriesArr = $(`#${yr}-notebook .${ctgry}-entries > .entries > textarea`).val().split("\n")
+            //change value of previous entries to false if they have been deleted
+            Object.keys(currEntries[ctgry]).forEach(oldEntry => currEntries[ctgry][oldEntry] = oldEntry in entriesArr)
+            entriesArr.forEach(entry => currEntries[ctgry][entry] = true) //append new values to entries[ctgry]
+            if("" in currEntries[ctgry]) delete currEntries[ctgry][""]
+            $(this).parent().parent().siblings(`.${ctgry}-entries`).children(".entries").html(entriesArr.join("<br>"))
+          })
+      })
+
       $.post('/updateentries', {entries}, postSendStatus) //update success/fail message after saving entries pool
     }
   })
@@ -213,10 +230,10 @@ function dateModified(){
     let key = getKey()
     let newDate = $(".edit-field").val()
     if(newDate != key){
-      if(key in edits)
-        edits[key]['newDate'] = newDate
+      if(key in edits[yr])
+        edits[yr][key]['newDate'] = newDate
       else
-        edits[key] = { newDate }
+        edits[yr][key] = { newDate }
       $("button[name='save-tbl'], button[name='cancel']").show()
     } else
       deleteObjProp(key, 'newDate')
@@ -233,11 +250,12 @@ function dateModified(){
 function notDateModified(){
   let val = $(".edit-field").val()
   let key = getKey()
+  let yr = getYr()
   let category = getCategory()
-  if(key in edits)
-    edits[key][category] = val
+  if(key in edits[yr])
+    edits[yr][key][category] = val
   else
-    edits[key] = { [category]: val }
+    edits[yr][key] = { [category]: val }
 
   $(".edit-field").parent().html(val)
   $("button[name='save-tbl'], button[name='cancel']").show()
@@ -249,62 +267,68 @@ function selectOnChanged() {
   let val = $(".edit-field").val().trim()
   let key = getKey()
   let category = getCategory()
+  let yr = getYr()
 
-  if(!checkRowErr(key, category, val)){
-    if(key in edits && 'newDate' in edits[key])
-      alert(`Warning: ${val} has conflicts with other roles for ${edits[key]['newDate']}.`)
+  if(!checkRowErr(key, yr, category, val)){
+    if(key in edits[yr] && 'newDate' in edits[yr][key])
+      alert(`Warning: ${val} has conflicts with other roles for ${edits[yr][key]['newDate']}.`)
     else {
-      let keyDate = $(`.dates .element${key}`).text()
+      let keyDate = $(`#${yr}-notebook .dates .element${key}`).text()
       alert(`Warning: ${val} has conflicts with other roles for ${keyDate}.`)
     }
   }
-  if(!checkColErr(key, category, val)){
-    if(key in edits && 'newDate' in edits[key])
-      alert(`Warning: ${val} is assigned consecutively to ${category} on ${edits[key]['newDate']}.`)
+  if(!checkColErr(key, yr, category, val)){
+    if(key in edits[yr] && 'newDate' in edits[yr][key])
+      alert(`Warning: ${val} is assigned consecutively to ${category} on ${edits[yr][key]['newDate']}.`)
     else {
-      let keyDate = $(`.dates .element${key}`).text()
+      let keyDate = $(`#${yr}-notebook .dates .element${key}`).text()
       alert(`Warning: ${val} is assigned consecutively to ${category} on ${keyDate}.`)
     }
   }
 
   //create obj in edits before assigning properties to it
-  if(!(key in edits)) edits[key] = {}
-  edits[key][category] = val
+  if(!(key in edits[yr])) edits[yr][key] = {}
+  edits[yr][key][category] = val
   $(".edit-field").parent().html(val)
   $("button[name='save-tbl'], button[name='cancel']").show()
 }
 
 //each row (same date) cannot have duplicate values for: moderator & (youth | children)
-function checkRowErr(key, category, val){
+function checkRowErr(key, yr, category, val){
   if(category == "place") return true //place should be omitted from evaluation
   if(val == "Cancelled" || val.trim() == "") return true //"Cancelled" doesn't count as duplicate
   if(category == "youth" || category == "children")
-    return $(`.moderator .element${key}`).text() != val
+    return $(`#${yr}-notebook .moderator .element${key}`).text() != val
   else if(category == "moderator")
-    return $(`.children .element${key}`).text() != val && $(`.youth .element${key}`).text() != val
+    return $(`#${yr}-notebook .children .element${key}`).text() != val && $(`#${yr}-notebook .youth .element${key}`).text() != val
   return true;
 }
 
 //each col (same category) cannot have consecutive duplicate values for: moderator, youth, children
-function checkColErr(key, category, val){
+function checkColErr(key, yr, category, val){
   if(category == "place") return true //place should be omitted from evaluation
   if(val == "Cancelled" || val.trim() == "") return true //"Cancelled" doesn't count as duplicate
   let nextKey = key + 1
   let prevKey = key - 1
-  if($(`.${category} .element${nextKey}`).length && val == $(`.${category} .element${nextKey}`).text())
+  if($(`#${yr}-notebook .${category} .element${nextKey}`).length && val == $(`#${yr}-notebook .${category} .element${nextKey}`).text())
     return false
     //return false for error b/c strings are the same, true otherwise
-  if($(`.${category} .element${prevKey}`).length)
-    return val != $(`.${category} .element${prevKey}`).text()
+  if($(`#${yr}-notebook .${category} .element${prevKey}`).length)
+    return val != $(`#${yr}-notebook .${category} .element${prevKey}`).text()
   return true
 }
 
 //avoid memory leaks by deleting useless object properties
 function deleteObjProp(key, category = undefined){
-  if(key in edits){
-    if(Object.keys(edits[key]).length === 0 && edits[key].constructor === Object)
-      delete edits[key] //delete the parent object as well if it is now empty
+  if(key in edits[yr]){
+    if(Object.keys(edits[yr][key]).length === 0 && edits[yr][key].constructor === Object)
+      delete edits[yr][key] //delete the parent object as well if it is now empty
   }
+}
+
+// get the year of the table that is being edited
+function getYr(){
+  return $(".selected-yr").text().trim()
 }
 
 //used only when .edit-field exists
