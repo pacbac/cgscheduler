@@ -9,12 +9,16 @@
 
 html {
   z-index: -2;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
 }
 
 body {
   margin: 0;
   padding: 0;
   background-color: $light-green;
+  flex-grow: 1;
 }
 
 h1.heading {
@@ -88,15 +92,16 @@ h1.heading {
     padding: 0;
     min-height: $min-height;
     background-color: $darkish-white;
-    flex-grow: 1;
-    flex-basis: 10%;
 
     @if $category == 'topic' {
-      flex-grow: 3 !important;
-      flex-basis: 30% !important;
+      flex-grow: 3;
+      flex-basis: 30%;
     } @else if $category == 'remarks' {
       flex-basis: 20%;
-      flex-grow: 3 !important;
+      flex-grow: 2;
+    } @else {
+      flex-grow: 1;
+      flex-basis: 10%;
     }
   }
 }
@@ -258,9 +263,8 @@ h1.heading {
 }
 
 footer {
-  position: absolute;
-  left: 5px;
-  bottom: 5px;
+  position: relative;
+  padding: 0 0 5px 5px;
   font-family: Poppins;
   z-index: -1;
   color: white;
