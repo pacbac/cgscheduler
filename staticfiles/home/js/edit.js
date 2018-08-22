@@ -52,7 +52,6 @@ $(document).ready(function(){
 });
 
 function loadElemListeners() {
-
   // behavior navigating tabs
   $(".yr-lbl").click(function() {
     let sn = ".selected-notebook"
