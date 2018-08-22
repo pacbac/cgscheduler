@@ -55,19 +55,25 @@ function loadElemListeners() {
 
   // behavior navigating tabs
   $(".yr-lbl").click(function() {
-    let displayBtns = $(".selected-notebook .entries-pool > div").css('display') == 'none'
+    let sn = ".selected-notebook"
+    let displayBtns = $(`${sn} .entries-pool > div`).css('display') == 'none'
     $(".selected-yr").removeClass("selected-yr")
     $(this).addClass("selected-yr")
-    $(".selected-notebook").hide()
-    $(".selected-notebook").removeClass("selected-notebook")
-    $(`#${getYr()}-notebook`).addClass("selected-notebook")
-    $(".selected-notebook").show()
+    $(sn).hide()
+    let yr = getYr()
+    let yrn = `#${yr}-notebook`
+    $(`${sn} .entries-pool > div`).hide()
+    $(sn).removeClass("selected-notebook")
+    $(yrn).addClass("selected-notebook")
+    $(sn).show()
     if(!displayBtns){
-      $(`#${getYr()}-notebook button[name='cancel-entries']`).show()
-      $(`#${getYr()}-notebook button[name='edit-entries-pool']`).text("Save Entries Pool")
+      $(`${yrn} button[name='cancel-entries']`).show()
+      $(`${yrn} .entries-pool > div`).show()
+      $(`${yrn} button[name='edit-entries-pool']`).text("Save Entries Pool")
     } else {
-      $(`#${getYr()}-notebook button[name='cancel-entries']`).hide()
-      $(`#${getYr()}-notebook button[name='edit-entries-pool']`).text("Edit Entries Pool")
+      $(`${yrn} button[name='cancel-entries']`).hide()
+      $(`${yrn} .entries-pool > div`).hide()
+      $(`${yrn} button[name='edit-entries-pool']`).text("Edit Entries Pool")
     }
   })
 
@@ -75,7 +81,10 @@ function loadElemListeners() {
     toggle text field on manual text entry elements
     the arrow MUST ALWAYS be there or else grandchildren+ will have unexpected behavior!
   */
-  $(".notebook > div:not(.youth):not(.children):not(.place):not(.moderator) .element").click(function() {
+  $(".notebook > div")
+    .not(".youth, .children, .place, .moderator")
+    .find(".element") // element is not a direct child of the category divs
+    .click(function() {
     if($(this).children("input").hasClass("edit-field")) return; //no need to retoggle same element clicked on
     else if($(".element").has(".edit-field").length){ //if edit-field already exists
       var modStatus;
@@ -96,7 +105,10 @@ function loadElemListeners() {
     toggle text field on dropdown menu elements
     the arrow MUST ALWAYS be there or else grandchildren+ will have unexpected behavior!
   */
-  $(".notebook > div:not(.dates):not(.topic):not(.remarks) .element").click(function() {
+  $(".notebook > div")
+    .not(".dates, .topic, .remarks")
+    .find(".element")
+    .click(function() {
     if($(this).children("select").hasClass("edit-field")) return; //no need to retoggle same element clicked on
     else if($(".element").has("input.edit-field").length){ //if edit-field already exists
       var modStatus;
@@ -170,13 +182,14 @@ function loadBtnListeners() {
   })
   //editing the entries pool
   $("button[name='edit-entries-pool']").click(function() {
+    let [$entriesDiv, $cancelBtn] = [$(".entries-pool > div"), $(this).siblings("button[name='cancel-entries']")]
     if($(this).text() == "Edit Entries Pool"){
-      $(".entries-pool > div").show()
-      $(this).siblings("button[name='cancel-entries']").show()
+      $entriesDiv.show()
+      $cancelBtn.show()
       $(this).text("Save Entries Pool")
     } else {
-      $(".entries-pool > div").hide()
-      $(this).siblings("button[name='cancel-entries']").hide()
+      $entriesDiv.hide()
+      $cancelBtn.hide()
       $(this).text("Edit Entries Pool")
 
       Object.keys(entries).forEach(yr => {
@@ -226,9 +239,9 @@ function postSendStatus(json){
 
 //response for modification of text field in date category
 function dateModified(){
-  if(checkDateFormat($(".edit-field").val())){
+  let newDate = $(".edit-field").val()
+  if(checkDateFormat(newDate)){
     let key = getKey()
-    let newDate = $(".edit-field").val()
     let yr = getYr()
     if(newDate != key){
       if(key in edits[yr])
@@ -249,10 +262,7 @@ function dateModified(){
 
 //response for modification of other non-date textfield categories
 function notDateModified(){
-  let val = $(".edit-field").val()
-  let key = getKey()
-  let yr = getYr()
-  let category = getCategory()
+  let [yr, key, category, val] = [getYr(), getKey(), getCategory(), $(".edit-field").val()]
   if(key in edits[yr])
     edits[yr][key][category] = val
   else
@@ -301,7 +311,8 @@ function checkRowErr(key, yr, category, val){
   if(category == "youth" || category == "children")
     return $(`#${yr}-notebook .moderator .element${key}`).text() != val
   else if(category == "moderator")
-    return $(`#${yr}-notebook .children .element${key}`).text() != val && $(`#${yr}-notebook .youth .element${key}`).text() != val
+    return $(`#${yr}-notebook .children .element${key}`).text() != val
+            && $(`#${yr}-notebook .youth .element${key}`).text() != val
   return true;
 }
 
@@ -309,13 +320,14 @@ function checkRowErr(key, yr, category, val){
 function checkColErr(key, yr, category, val){
   if(category == "place") return true //place should be omitted from evaluation
   if(val == "Cancelled" || val.trim() == "") return true //"Cancelled" doesn't count as duplicate
-  let nextKey = key + 1
-  let prevKey = key - 1
-  if($(`#${yr}-notebook .${category} .element${nextKey}`).length && val == $(`#${yr}-notebook .${category} .element${nextKey}`).text())
+  let [nextKey, prevKey] = [key + 1, key - 1]
+  let $nextElem = $(`#${yr}-notebook .${category} .element${nextKey}`),
+      $prevElem = $(`#${yr}-notebook .${category} .element${prevKey}`)
+  if($nextElem.length && val == $nextElem.text())
     return false
     //return false for error b/c strings are the same, true otherwise
-  if($(`#${yr}-notebook .${category} .element${prevKey}`).length)
-    return val != $(`#${yr}-notebook .${category} .element${prevKey}`).text()
+  if($prevElem.length)
+    return val != $prevElem.text()
   return true
 }
 

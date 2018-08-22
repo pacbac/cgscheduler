@@ -1,3 +1,6 @@
 from django.test import TestCase
+from home.models import TableEdit, EntryEdit
 
-# Create your tests here.
+class TableEditTestCase(TestCase):
+    def setUp(self):
+        pass
