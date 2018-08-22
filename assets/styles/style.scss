@@ -92,6 +92,7 @@ h1.heading {
     padding: 0;
     min-height: $min-height;
     background-color: $darkish-white;
+    min-width: 0;
 
     @if $category == 'topic' {
       flex-grow: 3;
@@ -130,6 +131,7 @@ h1.heading {
     family: Poppins;
     size: 22px;
   }
+  text-overflow: ellipsis;
   box-shadow: 0px 1px 0.5px $barely-black;
   color: black;
   background-color: inherit;
@@ -229,6 +231,7 @@ h1.heading {
       color: white;
       background-color: $dark-green;
       margin: 0;
+      text-transform: capitalize;
       font: {
         family: Poppins;
         weight: 400;
