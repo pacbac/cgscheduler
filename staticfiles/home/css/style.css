@@ -203,6 +203,19 @@ div.remarks {
     font-family: Poppins;
     font-size: 16px; }
 
+.hover {
+  position: absolute;
+  z-index: 1;
+  background-color: rgba(249, 255, 237, 0.5);
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.15);
+  color: black;
+  border-radius: 5px;
+  font-family: Poppins;
+  font-size: 22px;
+  min-height: 42px;
+  padding: 8px;
+  overflow-wrap: break-word; }
+
 .save-btns {
   display: flex;
   justify-content: flex-end;

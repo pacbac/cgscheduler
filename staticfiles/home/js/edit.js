@@ -21,7 +21,7 @@ Date.prototype.toString = function() {
   return `${this.getMonth()+1}/${this.getDate()}/${this.getFullYear()}`
 }
 
-$(document).ready(function(){
+$(function(){
   loadElemListeners();
   loadKeypressListeners();
   loadBtnListeners();
@@ -75,6 +75,31 @@ function loadElemListeners() {
       $(`${yrn} button[name='edit-entries-pool']`).text("Edit Entries Pool")
     }
   })
+
+  var createHover = function(){
+    if($(this)[0].scrollWidth > Math.ceil($(this).innerWidth()) //scrollWidth: int, innerWidth: float
+        && !$(this).has(".edit-field").length
+        && !$(this).has("div.hover").length){ // do not activate hover div when edit field is present
+      $("div.hover").remove()
+      $(".info").append(`<div class='hover'>${$(this).text()}</div>`)
+      let dest = $(this).eq(0).position()
+      $("div.hover").css({
+        top: dest.top,
+        left: dest.left,
+        'max-width': ($(this).width()+50)
+      })
+    }
+  }
+
+  // hover box an element if the text is too wide for the cell
+  $(".element").mouseenter(function(){
+      setTimeout(createHover.bind(this), 750)
+  })
+
+  $(document).on("mouseleave", "div.hover", function(){
+    $("div.hover").remove()
+  })
+
 
   /*
     toggle text field on manual text entry elements
