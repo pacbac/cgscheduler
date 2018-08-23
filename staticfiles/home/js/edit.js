@@ -77,9 +77,9 @@ function loadElemListeners() {
   })
 
   var createHover = function(){
-    if($(this)[0].scrollWidth > Math.ceil($(this).innerWidth()) //scrollWidth: int, innerWidth: float
-        && !$(this).has(".edit-field").length
-        && !$(this).has("div.hover").length){ // do not activate hover div when edit field is present
+    //check condition again in case element property has changed
+    if($(this)[0].scrollWidth > Math.ceil($(this).innerWidth())
+        && !$(this).has(".edit-field").length){
       $("div.hover").remove()
       $(".info").append(`<div class='hover'>${$(this).text()}</div>`)
       let dest = $(this).eq(0).position()
@@ -93,13 +93,14 @@ function loadElemListeners() {
 
   // hover box an element if the text is too wide for the cell
   $(".element").mouseenter(function(){
-      setTimeout(createHover.bind(this), 750)
+    if($("div.hover").length)
+      $("div.hover").remove()
+    else if($(this)[0].scrollWidth > Math.ceil($(this).innerWidth()) //scrollWidth: int, innerWidth: float
+        && !$(this).has(".edit-field").length) // do not activate hover div when edit field is present
+      setTimeout(createHover.bind(this), 500)
   })
 
-  $(document).on("mouseleave", "div.hover", function(){
-    $("div.hover").remove()
-  })
-
+  $(document).on("mouseleave click", "div.hover", () => $("div.hover").remove())
 
   /*
     toggle text field on manual text entry elements
