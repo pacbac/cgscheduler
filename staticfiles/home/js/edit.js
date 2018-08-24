@@ -2,7 +2,6 @@
 const thisYear = new Date().getFullYear()
 const darkGreen = "#027517";
 const darkRed = "#9e4f3f";
-const categories = ['newDate', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks']
 var edits = {} //list of edits to be sent to server
 var entries = {} //entry pool
 
@@ -248,7 +247,8 @@ function postSendStatus(json){
   json = JSON.parse(json)
   let $msg = $(".save-options > h3")
   let keys = Object.keys(json)
-  if(keys.length === 0 && json.constructor == Object){
+  if(json.status){
+    Object.keys(edits).forEach(yr => edits[yr] = {}) //reset edits object
     $msg.css("color", darkGreen)
     $msg.text("Posted to database successfully.")
     setTimeout(() => $msg.text(""), 3000)

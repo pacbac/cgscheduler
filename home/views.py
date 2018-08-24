@@ -33,7 +33,7 @@ def index(request):
 def updateEdits(request):
     if request.method != 'POST': return HttpResponse("Doesn't work")
     POST = QueryDict.dict(request.POST)
-    response = {}
+    response = { 'status': True } # status = True means post was success
     for key in POST.keys():
         # splitKey is always in the form {0: 'edits', 1: 'yr', 2: 'dateIndex', 3: 'category'}
         splitKeys = tuple(key_utils.splitKey(key))
@@ -63,12 +63,13 @@ def updateEdits(request):
                 print(logStr)
         else:
             response[key] = "Error: Could not post to server due to improper formatting"
+            response['status'] = False
     return HttpResponse(json.dumps(response))
 
 def updateEntries(request):
     if request.method != 'POST': return HttpResponse("Doesn't work")
     POST = QueryDict.dict(request.POST)
-    response = {}
+    response = { 'status': True }
     for key in POST.keys():
         splitKeys = tuple(key_utils.splitKey(key)) # splitKeys should look like {0: entries, 1: yr, 2: category, 3: personName }
         boolVal = True if POST[key] == 'true' else False # False should be default to protect against unintended values
@@ -84,4 +85,5 @@ def updateEntries(request):
                 print("Deleted object: (%s, %s)" % (ctgry, name))
         else:
             response[key] = "Error: Could not post to server due to improper formatting"
+            response['status'] = False
     return HttpResponse(json.dumps(response))
