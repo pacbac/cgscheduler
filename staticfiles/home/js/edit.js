@@ -75,36 +75,6 @@ function loadElemListeners() {
     }
   })
 
-  let createHover = function(){
-    //check condition again in case element property has changed
-    if($(this)[0].scrollWidth > Math.ceil($(this).innerWidth())
-        && !$(this).has(".edit-field").length){
-      $("div.hover").remove()
-      $(".info").append(`<div class='hover'>${$(this).text()}</div>`)
-      let dest = $(this).eq(0).position()
-      $("div.hover").css({
-        top: dest.top,
-        left: dest.left,
-        'max-width': ($(this).width()+50)
-      })
-    }
-  }
-
-  // hover box an element if the text is too wide for the cell
-  $(".element").mouseenter(function(){
-    if($("div.hover").length)
-      $("div.hover").remove()
-    else if($(this)[0].scrollWidth > Math.ceil($(this).innerWidth()) //scrollWidth: int, innerWidth: float
-        && !$(this).has(".edit-field").length) // do not activate hover div when edit field is present
-      setTimeout(createHover.bind(this), 500)
-  })
-
-  /*
-    remove hover box whenever mouse leaves or is clicked
-    (assuming the click means they wish to edit the content of the element itself)
-  */
-  $(document).on("mouseleave click", "div.hover", () => $("div.hover").remove())
-
   /*
     toggle text field on manual text entry elements
     the arrow MUST ALWAYS be there or else grandchildren+ will have unexpected behavior!
@@ -192,7 +162,12 @@ function loadBtnListeners() {
       if(!(key in edits[yr])) edits[yr][key] = {}
       edits[yr][key][ctgry] = $(".edit-field").val()
     }
-    $.post('/updateedits', {edits}, postSendStatus) //update success/fail message after saving table
+    $.post('/updateedits', {edits}, json => { //update success/fail message after saving table
+      json = JSON.parse(json)
+      postSendStatus(json)
+      if(json.status)
+        $("button[name='cancel'], [name='save-tbl']").hide()
+    })
   })
 
   $("button[name='cancel-entries']").click(() => {
@@ -235,7 +210,14 @@ function loadBtnListeners() {
           })
       })
 
-      $.post('/updateentries', {entries}, postSendStatus) //update success/fail message after saving entries pool
+      $.post('/updateentries', {entries}, json => { //update success/fail message after saving entries pool
+        json = JSON.parse(json)
+        postSendStatus(json)
+        if(json.status){
+          $("button[name='edit-entries-pool']").text("Edit Entries Pool")
+          $("button[name='cancel-entries']").hide()
+        }
+      })
     }
   })
 
@@ -248,7 +230,6 @@ function loadBtnListeners() {
 }
 
 function postSendStatus(json){
-  json = JSON.parse(json)
   let $msg = $(".save-options > h3")
   let keys = Object.keys(json)
   if(json.status){
