@@ -1,0 +1,22 @@
+// SCSS for views page
+@import 'main';
+
+.hover {
+  position: absolute;
+  z-index: 1;
+  background-color: rgba(#f9ffed, 0.5);
+  box-shadow: 1px 1px 10px $barely-black;
+  color: black;
+  border-radius: 5px;
+  font: {
+    family: Poppins;
+    size: 22px;
+  }
+  min-height: $row-height;
+  padding: 8px;
+  overflow-wrap: break-word;
+}
+
+div:not(.dates):not(.topic):not(.remarks) > div.info > .element {
+  text-transform: capitalize;
+}

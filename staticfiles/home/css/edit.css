@@ -178,20 +178,28 @@ div.remarks {
     background-color: #eaffee; }
   .element:nth-child(even) {
     background-color: #c9f2d0; }
-  .element input.edit-field {
-    border-style: solid;
-    border-color: rgba(2, 117, 23, 0.4);
-    border-width: 2px;
-    border-radius: 5px;
-    background-color: transparent;
-    position: relative;
-    width: 90%;
-    font-family: Poppins;
-    font-size: 20px;
-    font-weight: 300;
-    text-align: center; }
-    .element input.edit-field:focus {
-      outline: none; }
+
+footer {
+  position: relative;
+  padding: 0 0 5px 5px;
+  font-family: Poppins;
+  z-index: -1;
+  color: white; }
+
+.element > input.edit-field {
+  border-style: solid;
+  border-color: rgba(2, 117, 23, 0.4);
+  border-width: 2px;
+  border-radius: 5px;
+  background-color: transparent;
+  position: relative;
+  width: 90%;
+  font-family: Poppins;
+  font-size: 20px;
+  font-weight: 300;
+  text-align: center; }
+  .element > input.edit-field:focus {
+    outline: none; }
 
 .save-options {
   flex-basis: 100%;
@@ -202,19 +210,6 @@ div.remarks {
     justify-content: flex-start;
     font-family: Poppins;
     font-size: 16px; }
-
-.hover {
-  position: absolute;
-  z-index: 1;
-  background-color: rgba(249, 255, 237, 0.5);
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.15);
-  color: black;
-  border-radius: 5px;
-  font-family: Poppins;
-  font-size: 22px;
-  min-height: 42px;
-  padding: 8px;
-  overflow-wrap: break-word; }
 
 .save-btns {
   display: flex;
@@ -395,10 +390,3 @@ div.remarks {
       margin-bottom: 10px;
       font-family: Poppins;
       font-size: 16px; }
-
-footer {
-  position: relative;
-  padding: 0 0 5px 5px;
-  font-family: Poppins;
-  z-index: -1;
-  color: white; }

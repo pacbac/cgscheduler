@@ -1,5 +1,5 @@
 #automatically merge SASS changes
-node-sass assets/styles/style.scss -o staticfiles/home/css 2>&1
+node-sass assets/styles/ -o staticfiles/home/css/ 2>&1
 
 if [ $? -eq 0 ]; then
   echo 'SASS finished successfully.'

@@ -254,7 +254,7 @@ function postSendStatus(json){
   if(json.status){
     Object.keys(edits).forEach(yr => edits[yr] = {}) //reset edits object
     $msg.css("color", darkGreen)
-    $msg.text("Posted to database successfully.")
+    $msg.append("Posted to database successfully.<br>")
     setTimeout(() => $msg.text(""), 3000)
   } else {
     //print server error message with a list of the slots that don't work

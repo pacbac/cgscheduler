@@ -6,12 +6,6 @@
   <head>
     <title>Cell Group Schedule</title>
     {% include "links.html" %}
-    {% if request.path == "/edit" %}
-      <script src='{% static "home/js/cookie.js" %}'></script>
-      <script src='{% static "home/js/edit.js" %}'></script>
-    {% else %}
-      <script src='{% static "home/js/view.js" %}'></script>
-    {% endif %}
   </head>
   <body>
     {% now "Y" as selectedYr %} {# selectedYr is a string #}
@@ -58,19 +52,19 @@
                 <button name="cancel">Cancel</button>
               </div>
             </div>
-          {% endif %}
-          <div class="entries-pool">
-            {% for ctgry in entries|get_item:yr %}
-              <div class="{{ ctgry }}-entries">
-                <h3>{{ ctgry }}</h3>
-                <div class="entries">
-                  {% for entry in entries|get_item:yr|get_item:ctgry %}
-                    {{ entry }}<br>
-                  {% endfor %}
+            <div class="entries-pool">
+              {% for ctgry in entries|get_item:yr %}
+                <div class="{{ ctgry }}-entries">
+                  <h3>{{ ctgry }}</h3>
+                  <div class="entries">
+                    {% for entry in entries|get_item:yr|get_item:ctgry %}
+                      {{ entry }}<br>
+                    {% endfor %}
+                  </div>
                 </div>
-              </div>
-            {% endfor %}
-          </div>
+              {% endfor %}
+            </div>
+          {% endif %}
         </div>
       {% endfor %}
     </div>

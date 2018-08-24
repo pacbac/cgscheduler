@@ -57,7 +57,7 @@ def updateEdits(request):
                     db_utils.CATGRIES[ctgry](edit, None)
                     if edit[0].isEmpty():
                         edit.delete()
-                        logStr = "Table entry deleted: (%s)" % origDate
+                        logStr = "Table entry deleted: (%s, %s)" % (origDate, ctgry)
                 else:
                     db_utils.CATGRIES[ctgry](edit, POST[key]) # each entry has varied properties
                 print(logStr)
@@ -82,7 +82,7 @@ def updateEntries(request):
                 print("New entry saved: (%s)" % str(entry))
             elif entry.exists() and not boolVal: #delete an existing object
                 entry.delete()
-                print("Deleted object: (%s, %s)" % (ctgry, name))
+                print("Deleted object: (%s, %s, %s)" % (yr, ctgry, name))
         else:
             response[key] = "Error: Could not post to server due to improper formatting"
             response['status'] = False
