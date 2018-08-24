@@ -75,7 +75,7 @@ function loadElemListeners() {
     }
   })
 
-  var createHover = function(){
+  let createHover = function(){
     //check condition again in case element property has changed
     if($(this)[0].scrollWidth > Math.ceil($(this).innerWidth())
         && !$(this).has(".edit-field").length){
@@ -99,6 +99,10 @@ function loadElemListeners() {
       setTimeout(createHover.bind(this), 500)
   })
 
+  /*
+    remove hover box whenever mouse leaves or is clicked
+    (assuming the click means they wish to edit the content of the element itself)
+  */
   $(document).on("mouseleave click", "div.hover", () => $("div.hover").remove())
 
   /*
