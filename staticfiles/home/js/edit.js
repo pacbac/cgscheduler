@@ -30,6 +30,12 @@ $(function(){
           if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
               xhr.setRequestHeader("X-CSRFToken", csrftoken);
           }
+      },
+      error: () => {
+        let $msg = $(".save-options > h3")
+        $msg.css("color", darkRed)
+        $msg.text("Cannot post to server")
+        setTimeout(() => $msg.text(""), 5000)
       }
   });
 
@@ -129,7 +135,7 @@ function loadElemListeners() {
                           .reduce((total, entry) => `${total}<option value=${entry}>${entry}</option>`
                                               , "<select class='edit-field' onchange='selectOnChanged()'>")
     entryHTML += "<option value=''></option>"
-    entryHTML += "<option value='Cancelled'>Cancelled</option></select>"
+    entryHTML += "<option value='Canceled'>Canceled</option></select>"
     $(this).html(entryHTML)
     $(".edit-field").val(val)
   })
@@ -162,16 +168,23 @@ function loadBtnListeners() {
       if(!(key in edits[yr])) edits[yr][key] = {}
       edits[yr][key][ctgry] = $(".edit-field").val()
     }
-    $.post('/updateedits', {edits}, json => { //update success/fail message after saving table
-      json = JSON.parse(json)
-      postSendStatus(json)
-      if(json.status)
-        $("button[name='cancel'], [name='save-tbl']").hide()
+    $.ajax({
+      type: 'POST',
+      url: '/updateedits',
+      data: {edits},
+      success: json => { //update success/fail message after saving entries pool
+        json = JSON.parse(json)
+        postSendStatus(json)
+        if(json.status){
+          $("button[name='cancel'], [name='save-tbl']").hide()
+        }
+      }
     })
   })
 
   $("button[name='cancel-entries']").click(() => {
-    $(".entries-pool > div").each(function(){
+    let yr = getYr()
+    $(`#${getYr()}-notebook .entries-pool > div`).each(function(){
       let yr = getYr()
       let type = $(this).attr("class")
       type = type.substring(0, type.indexOf("-")) // extract the ${ctgry} part of the class name
@@ -185,7 +198,7 @@ function loadBtnListeners() {
   })
   //editing the entries pool
   $("button[name='edit-entries-pool']").click(function() {
-    let [$entriesDiv, $cancelBtn] = [$(".entries-pool > div"), $(this).siblings("button[name='cancel-entries']")]
+    let [$entriesDiv, $cancelBtn] = [$(`#${getYr()}-notebook .entries-pool > div`), $(this).siblings("button[name='cancel-entries']")]
     if($(this).text() == "Edit Entries Pool"){
       $entriesDiv.show()
       $cancelBtn.show()
@@ -210,12 +223,17 @@ function loadBtnListeners() {
           })
       })
 
-      $.post('/updateentries', {entries}, json => { //update success/fail message after saving entries pool
-        json = JSON.parse(json)
-        postSendStatus(json)
-        if(json.status){
-          $("button[name='edit-entries-pool']").text("Edit Entries Pool")
-          $("button[name='cancel-entries']").hide()
+      $.ajax({
+        type: 'POST',
+        url: '/updateentries',
+        data: {entries},
+        success: json => { //update success/fail message after saving entries pool
+          json = JSON.parse(json)
+          postSendStatus(json)
+          if(json.status){
+            $("button[name='edit-entries-pool']").text("Edit Entries Pool")
+            $("button[name='cancel-entries']").hide()
+          }
         }
       })
     }
@@ -317,7 +335,7 @@ function selectOnChanged() {
 //each row (same date) cannot have duplicate values for: moderator & (youth | children)
 function checkRowErr(key, yr, category, val){
   if(category == "place") return true //place should be omitted from evaluation
-  if(val == "Cancelled" || val.trim() == "") return true //"Cancelled" doesn't count as duplicate
+  if(val == "Canceled" || val.trim() == "") return true //"Canceled" doesn't count as duplicate
   if(category == "youth" || category == "children")
     return $(`#${yr}-notebook .moderator .element${key}`).text() != val
   else if(category == "moderator")
@@ -329,7 +347,7 @@ function checkRowErr(key, yr, category, val){
 //each col (same category) cannot have consecutive duplicate values for: moderator, youth, children
 function checkColErr(key, yr, category, val){
   if(category == "place") return true //place should be omitted from evaluation
-  if(val == "Cancelled" || val.trim() == "") return true //"Cancelled" doesn't count as duplicate
+  if(val == "Canceled" || val.trim() == "") return true //"Canceled" doesn't count as duplicate
   let [nextKey, prevKey] = [key + 1, key - 1]
   let $nextElem = $(`#${yr}-notebook .${category} .element${nextKey}`),
       $prevElem = $(`#${yr}-notebook .${category} .element${prevKey}`)
