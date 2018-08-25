@@ -171,6 +171,7 @@ div.remarks {
   background-color: inherit;
   height: 42px;
   position: relative;
+  white-space: nowrap;
   border-bottom-style: solid;
   border-bottom-color: rgba(2, 117, 23, 0.25);
   border-bottom-width: 2px; }

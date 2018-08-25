@@ -137,6 +137,7 @@ h1.heading {
   background-color: inherit;
   height: $row-height;
   position: relative;
+  white-space: nowrap;
   border-bottom: {
     style: solid;
     color: rgba($dark-green, 0.25);
