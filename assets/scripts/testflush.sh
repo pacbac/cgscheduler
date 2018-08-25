@@ -1,2 +1,2 @@
 #test script for flush
-python manage.py flush --no-input
+python manage.py flushdb
