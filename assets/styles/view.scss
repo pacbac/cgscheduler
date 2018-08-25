@@ -21,10 +21,14 @@
   Convert to proper case, even for all caps entries
   (which the capitalize option will fail at)
 */
-div:not(.dates):not(.topic):not(.remarks) > div.info > .element {
-  text-transform: lowercase;
+@each $selectable in $entries-list {
+  .#{$selectable} {
+    > div.info > .element {
+      text-transform: lowercase;
 
-  &::first-letter {
-    text-transform: uppercase;
+      &::first-letter {
+        text-transform: uppercase;
+      }
+    }
   }
 }

@@ -193,7 +193,22 @@ footer {
   Convert to proper case, even for all caps entries
   (which the capitalize option will fail at)
 */
-div:not(.dates):not(.topic):not(.remarks) > div.info > .element {
+.place > div.info > .element {
   text-transform: lowercase; }
-  div:not(.dates):not(.topic):not(.remarks) > div.info > .element::first-letter {
+  .place > div.info > .element::first-letter {
+    text-transform: uppercase; }
+
+.moderator > div.info > .element {
+  text-transform: lowercase; }
+  .moderator > div.info > .element::first-letter {
+    text-transform: uppercase; }
+
+.children > div.info > .element {
+  text-transform: lowercase; }
+  .children > div.info > .element::first-letter {
+    text-transform: uppercase; }
+
+.youth > div.info > .element {
+  text-transform: lowercase; }
+  .youth > div.info > .element::first-letter {
     text-transform: uppercase; }
