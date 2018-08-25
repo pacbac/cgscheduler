@@ -189,5 +189,11 @@ footer {
   padding: 8px;
   overflow-wrap: break-word; }
 
+/*
+  Convert to proper case, even for all caps entries
+  (which the capitalize option will fail at)
+*/
 div:not(.dates):not(.topic):not(.remarks) > div.info > .element {
-  text-transform: capitalize; }
+  text-transform: lowercase; }
+  div:not(.dates):not(.topic):not(.remarks) > div.info > .element::first-letter {
+    text-transform: uppercase; }
