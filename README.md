@@ -17,10 +17,11 @@ These instructions will get you a copy of the project up and running on your loc
 Fork the repo, then clone your fork with ```git clone```.
 Make sure to have a ```.env``` file to plug in private variables into Django.
 The ```.env``` file should have the values:
-- SECRET_KEY=[[Get a secret key [here](https://www.miniwebtool.com/django-secret-key-generator/)]]
-- DATABASE_URL=[[your database url here]]
-- DEBUG=True
-
+```
+SECRET_KEY=[[Get a secret key [here](https://www.miniwebtool.com/django-secret-key-generator/)]]
+DATABASE_URL=[[your database url here]]
+DEBUG=True
+```
 Alternatively, if you would just like to test with a local SQLite DB, replace the ```DATABASES``` variable in the ```cgscheduler/settings.py``` file to
 ```
 DATABASES = {
@@ -30,10 +31,15 @@ DATABASES = {
     }
 }
 ```
-Run ```python manage.py makemigrations home``` to generate the script for tables in the database
-Run ```python manage.py migrate``` to apply changes to the database
-Run ```python manage.py collectstatic``` to collect static CSS/JS files
-Run ```python manage.py runserver``` to start server
+Run commands:  
+```$ python manage.py makemigrations home``` to generate the script for tables in the database  
+```$ python manage.py migrate``` to apply changes to the database  
+```$ python manage.py collectstatic``` to collect static CSS/JS files  
+```$ python manage.py runserver``` to start local server  
+
+Visit the following URLs:
+- Read-only: [localhost:[port]/]()
+- Edit page: [localhost[port]/edit]()
 
 ## Built With
 
