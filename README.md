@@ -39,7 +39,7 @@ Run commands:
 
 Visit the following URLs:
 - Read-only: [localhost:[port]/]()
-- Edit page: [localhost[port]/edit]()
+- Edit page: [localhost:[port]/edit]()
 
 ## Built With
 
