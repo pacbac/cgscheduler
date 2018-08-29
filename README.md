@@ -18,11 +18,12 @@ Fork the repo, then clone your fork with ```git clone```.
 Make sure to have a ```.env``` file to plug in private variables into Django.
 The ```.env``` file should have the values:
 ```
-SECRET_KEY=[[Get a secret key [here](https://www.miniwebtool.com/django-secret-key-generator/)]]
+SECRET_KEY=[[your secret key here]]
 DATABASE_URL=[[your database url here]]
 DEBUG=True
 ```
-Alternatively, if you would just like to test with a local SQLite DB, replace the ```DATABASES``` variable in the ```cgscheduler/settings.py``` file to
+You can generate a secret key [here](https://www.miniwebtool.com/django-secret-key-generator/).  
+If you would instead just like to test with a local SQLite DB, replace the ```DATABASES``` variable in the ```cgscheduler/settings.py``` file to
 ```
 DATABASES = {
     'default': {
@@ -47,6 +48,7 @@ Visit the following URLs:
 * HTML, SCSS, jQuery with ES6
 * PostgreSQL
 * Heroku
+* Shell scripts
 
 ## Authors
 
