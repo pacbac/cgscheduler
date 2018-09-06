@@ -1,11 +1,23 @@
 #automatically merge SASS changes
-node-sass assets/styles/ -o staticfiles/home/css/ 2>&1
+cd frontend && npm run build-css 2>&1
+cd ..
 
-if [ $? -eq 0 ]; then
+if [ !$? ]; then
   echo 'SASS finished successfully.'
 else
   echo 'SASS compilation error'
   exit 1
+fi
+
+
+if [ "$1" = 'react' ]; then
+  cd frontend && npm run build
+
+  if [ !$? ]; then
+    echo 'Rebuilding frontend...'
+    cd ..
+  fi
+
 fi
 
 #start django server

@@ -6,7 +6,6 @@ import json
 from .models import TableEdit, EntryEdit
 from django.views.decorators.csrf import ensure_csrf_cookie
 
-@ensure_csrf_cookie
 def index(request):
     thisYear = datetime.date.today().year
     tabs = [ str(thisYear+yr) for yr in range(-1, 2) ]
@@ -28,7 +27,7 @@ def index(request):
             for entry in EntryEdit.objects.filter(yr=int(yr), category=ctgry):
                 context['entries'][yr][ctgry].append(entry.name)
 
-    return render(request, 'index.html', context)
+    return HttpResponse(json.dumps(context))
 
 def updateEdits(request):
     if request.method != 'POST': return HttpResponse("Doesn't work")

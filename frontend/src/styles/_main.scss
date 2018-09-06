@@ -77,12 +77,15 @@ h1.heading {
   color: white;
   background-color: $darkish-white;
   padding: 20px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
 
   &:not(.selected-notebook) {
     display: none;
+  }
+
+  > div.table {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
 
