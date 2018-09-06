@@ -64,6 +64,12 @@
   flex-grow: 1;
   display: flex;
   justify-content: space-between;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
 }
 
 @each $entry in $entries-list {
@@ -71,7 +77,6 @@
     max-width: 24%;
     flex-grow: 1;
     box-shadow: $half-black 1px 1px 3px;
-    display: none;
     background-color: $very-light-green;
     > h3 {
       @include dimensions(100%, 40px);

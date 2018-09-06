@@ -11,7 +11,7 @@ class Notebook extends Component {
         <TableEdit categories={this.props.categories}
           dates={this.props.dates}
           edits={this.props.edits}/>
-        <EntryEdit/>
+        <EntryEdit entries={this.props.entries}/>
       </div>
     )
   }
