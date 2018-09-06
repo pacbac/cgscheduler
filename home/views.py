@@ -6,11 +6,11 @@ import json
 from .models import TableEdit, EntryEdit
 from django.views.decorators.csrf import ensure_csrf_cookie
 
-def index(request):
+def getData(request):
+    if request.method != 'GET': return HttpResponse({ 'status': False })
     thisYear = datetime.date.today().year
     tabs = [ str(thisYear+yr) for yr in range(-1, 2) ]
     context = {
-        'categories': ['dates', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks'],
         'dates': { yr: date_utils.loadDates(startdate=datetime.date(int(yr), 1, 1)) for yr in tabs },
         'edits': {}, # key: date in mm/dd/yyyy, value: table edit db obj
         'tabs': tabs,
@@ -30,7 +30,7 @@ def index(request):
     return HttpResponse(json.dumps(context))
 
 def updateEdits(request):
-    if request.method != 'POST': return HttpResponse("Doesn't work")
+    if request.method != 'POST': return HttpResponse({ 'status': False })
     POST = QueryDict.dict(request.POST)
     response = { 'status': True } # status = True means post was success
     for key in POST.keys():
@@ -66,7 +66,7 @@ def updateEdits(request):
     return HttpResponse(json.dumps(response))
 
 def updateEntries(request):
-    if request.method != 'POST': return HttpResponse("Doesn't work")
+    if request.method != 'POST': return HttpResponse(json.dumps({ 'status': False }))
     POST = QueryDict.dict(request.POST)
     response = { 'status': True }
     for key in POST.keys():
