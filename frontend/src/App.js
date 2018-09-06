@@ -5,7 +5,7 @@ import Notebook from './components/Notebook.js'
 const Tabs = props => {
   let labels = props.tabs.map(yr => (
       <div key={yr+" yr-lbl"}
-        className={"yr-lbl" + (yr == props.selectedYr ? " selected-yr" : "")}
+        className={"yr-lbl" + (yr === props.selectedYr ? " selected-yr" : "")}
         onClick={props.onClick}>
         {yr}
       </div>
@@ -19,7 +19,10 @@ class App extends Component {
 
     let year = new Date().getFullYear()
 
-    this.state = {}
+    this.state = {
+      tabs: [year - 1, year, year + 1],
+      selectedYr: year
+    }
     this.tabChange = this.tabChange.bind(this)
     this.elemSelect = this.tabChange.bind(this)
   }
@@ -44,21 +47,17 @@ class App extends Component {
   }
 
   render(){
-    if(!this.state.tabs){ //if state is empty (pre-ajax call)
-      return (
-        <div className="center-content">
-        </div>
-      )
-    }
-    let yrNotebooks = this.state.tabs.map(yr => (
-      <Notebook yr={yr}
-        categories={this.state.categories}
-        dates={this.state.dates[yr]}
-        edits={this.state.edits[yr]}
-        entries={this.state.entries[yr]}
-        selectedYr={this.state.selectedYr}
-        elemSelect={this.state.elemSelect}/>
-    ))
+    let yrNotebooks = !("dates" in this.state) ? // "dates" only exists post-ajax call
+      this.state.tabs.map(yr => <Notebook key={`${yr}-notebook`} yr={yr} selectedYr={this.state.selectedYr}/>) :
+      this.state.tabs.map(yr => (
+        <Notebook yr={yr}
+          categories={this.state.categories}
+          dates={this.state.dates[yr]}
+          edits={this.state.edits[yr]}
+          entries={this.state.entries[yr]}
+          selectedYr={this.state.selectedYr}
+          elemSelect={this.state.elemSelect}/>
+      ));
     return (
       <div className="center-content">
         <Tabs tabs={this.state.tabs}

@@ -1,29 +1,38 @@
 import React, { Component } from 'react'
 import Element from './Element.js'
 
-class TableEdit extends Component {
-  render(){
-    let categories = this.props.categories
-    let dates = this.props.dates
-    let edits = this.props.edits
+const categories = ['dates', 'place', 'topic', 'moderator', 'children', 'youth', 'remarks']
 
-    // create a 2D array of the edits that contains JSX elements
-    let renderCategories = categories.map(category => {
-      if(category === 'dates'){
-        return dates.map((date, i) => {
-          return (<Element i={i}
-            content={(date in edits && "newDate" in edits[date]) ? edits[date].newDate : date}/>)
-        })
-      } else {
-        return dates.map((date, i) => (
-          <Element i={i}
-            content={(date in edits && category in edits[date]) ? edits[date][category] : ''}/>
-        ))
-      }
-    })
+class TableEdit extends Component {
+  getElements(){
+    let elements = []
+    let renderCategories;
+    if(!this.props.dates) { //check if ajax-called properties are available
+      renderCategories = categories.map(category => {
+        //return empty 24-week-length array of blank elements
+        return Array.apply(null, Array(24)).map((elem, i) => <Element i={i} content=''/>)
+      })
+    } else {
+      let dates = this.props.dates
+      let edits = this.props.edits
+
+      // create a 2D array of the edits that contains JSX elements
+      renderCategories = categories.map(category => {
+        if(category === 'dates'){
+          return dates.map((date, i) => {
+            return (<Element i={i}
+              content={(date in edits && "newDate" in edits[date]) ? edits[date].newDate : date}/>)
+          })
+        } else {
+          return dates.map((date, i) => (
+            <Element i={i}
+              content={(date in edits && category in edits[date]) ? edits[date][category] : ''}/>
+          ))
+        }
+      })
+    }
 
     // convert the renderCategories 2D array into a renderable 1D mapping array (with div wrappers)
-    let elements = []
     for(let i = 0; i < categories.length; i++){
       elements.push((
         <div className={categories[i]}>
@@ -34,9 +43,13 @@ class TableEdit extends Component {
         </div>
       ))
     }
+    return elements
+  }
+
+  render(){
     return (
       <div className="table">
-        {elements}
+        {this.getElements()}
       </div>
     )
   }
