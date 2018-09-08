@@ -1,45 +1,21 @@
 import React, { Component } from 'react';
 import './css/edit.css';
 import Notebook from './components/Notebook.js'
-
-const Tabs = props => {
-  let labels = props.tabs.map(yr => (
-      <div key={yr+" yr-lbl"}
-        className={"yr-lbl" + (yr === props.selectedYr ? " selected-yr" : "")}
-        onClick={props.onClick}>
-        {yr}
-      </div>
-    ))
-  return <div className="yr-tabs">{labels}</div>
-}
+import { store } from './store'
+import { changeTab, setAjaxData } from './actions'
+import { yrs } from './static-data'
 
 class App extends Component {
   constructor(props){
     super(props)
-
-    let year = new Date().getFullYear()
-
-    this.state = {
-      tabs: [year - 1, year, year + 1],
-      selectedYr: year
-    }
-    this.tabChange = this.tabChange.bind(this)
-    this.elemSelect = this.tabChange.bind(this)
+    this.elemSelect = this.elemSelect.bind(this)
   }
 
   componentDidMount(){
     fetch('api/get')
       .then(res => res.json())
-      .then(result => {
-        result.selectedYr = result.tabs[1]
-        this.setState(result)
-      }, err => console.log(err))
-  }
-
-  tabChange(e){
-    this.setState({
-      selectedYr: e.target.innerText //innerText of a tab is just the year
-    })
+      .then(result => store.dispatch(setAjaxData(result))
+      , err => console.log(err))
   }
 
   elemSelect(){
@@ -47,25 +23,35 @@ class App extends Component {
   }
 
   render(){
-    let yrNotebooks = !("dates" in this.state) ? // "dates" only exists post-ajax call
-      this.state.tabs.map(yr => <Notebook key={`${yr}-notebook`} yr={yr} selectedYr={this.state.selectedYr}/>) :
-      this.state.tabs.map(yr => (
-        <Notebook yr={yr}
-          categories={this.state.categories}
-          dates={this.state.dates[yr]}
-          edits={this.state.edits[yr]}
-          entries={this.state.entries[yr]}
-          selectedYr={this.state.selectedYr}
-          elemSelect={this.state.elemSelect}/>
+    let curState = store.getState()
+    let yrNotebooks = yrs.map(yr => (
+        <Notebook key={`${yr}-notebook`} yr={yr}
+          elemSelect={curState.elemSelect}/>
       ));
     return (
       <div className="center-content">
-        <Tabs tabs={this.state.tabs}
-          selectedYr={this.state.selectedYr}
-          onClick={this.tabChange}/>
+        <Tabs/>
         {yrNotebooks}
       </div>
     )
+  }
+}
+
+class Tabs extends Component {
+  tabChange(e){
+    const newSelectYr = parseInt(e.target.innerHTML)
+    store.dispatch(changeTab(newSelectYr))
+  }
+
+  render(){
+    let labels = yrs.map(yr => (
+        <div key={yr+" yr-lbl"}
+          className={"yr-lbl" + (yr === store.getState().selectedYr ? " selected-yr" : "")}
+          onClick={this.tabChange}>
+          {yr}
+        </div>
+      ))
+    return <div className="yr-tabs">{labels}</div>
   }
 }
 
