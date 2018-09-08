@@ -10,24 +10,33 @@ def getData(request):
     if request.method != 'GET': return HttpResponse({ 'status': False })
     thisYear = datetime.date.today().year
     tabs = [ str(thisYear+yr) for yr in range(-1, 2) ]
-    context = {
-        'dates': { yr: date_utils.loadDates(startdate=datetime.date(int(yr), 1, 1)) for yr in tabs },
-        'edits': {}, # key: date in mm/dd/yyyy, value: table edit db obj
-        'tabs': tabs,
-        'entries': { yr: {'place': [], 'moderator': [], 'children': [], 'youth': []} for yr in tabs }
+    response = {
+        # key: date in mm/dd/yyyy, value: table edit db obj
+        'tableEntries': { yr: {
+            'dates': date_utils.loadDates(startdate=datetime.date(int(yr), 1, 1))
+            # edits : { ... } is initialized later
+        } for yr in tabs },
+        'entriesPool': { yr: {
+            'place': [],
+            'moderator': [],
+            'children': [],
+            'youth': []
+        } for yr in tabs },
+        'status': True
     }
 
     for yr in tabs:
         #populate table edits
         editsLowerBound, editsUpperBound = datetime.date(int(yr), 1, 1), datetime.date(int(yr)+1, 1, 1)
         tableedits = TableEdit.objects.filter(date__gte=editsLowerBound, date__lt=editsUpperBound)
-        context['edits'][yr] = { date_utils.dateToStr(edit.date): edit.toDict() for edit in tableedits }
+        response['tableEntries'][yr]['edits'] = { date_utils.dateToStr(edit.date): edit.toDict() for edit in tableedits }
         #populate entries pool
-        for ctgry in context['entries'][yr]:
+        for ctgry in response['entriesPool'][yr]:
+            if ctgry == 'dates': continue # dates has already been initialized
             for entry in EntryEdit.objects.filter(yr=int(yr), category=ctgry):
-                context['entries'][yr][ctgry].append(entry.name)
+                response['entriesPool'][yr][ctgry].append(entry.name)
 
-    return HttpResponse(json.dumps(context))
+    return HttpResponse(json.dumps(response))
 
 def updateEdits(request):
     if request.method != 'POST': return HttpResponse({ 'status': False })
