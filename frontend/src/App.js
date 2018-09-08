@@ -1,15 +1,11 @@
 import React, { Component } from 'react';
 import './css/edit.css';
-import Notebook from './components/Notebook.js'
+import Notebook from './containers/Notebook.js'
 import { store } from './store'
 import { changeTab, setAjaxData } from './actions'
 import { yrs } from './static-data'
 
 class App extends Component {
-  constructor(props){
-    super(props)
-    this.elemSelect = this.elemSelect.bind(this)
-  }
 
   componentDidMount(){
     fetch('api/get')
@@ -18,16 +14,9 @@ class App extends Component {
       , err => console.log(err))
   }
 
-  elemSelect(){
-
-  }
-
   render(){
     let curState = store.getState()
-    let yrNotebooks = yrs.map(yr => (
-        <Notebook key={`${yr}-notebook`} yr={yr}
-          elemSelect={curState.elemSelect}/>
-      ));
+    let yrNotebooks = yrs.map(yr => <Notebook key={`${yr}-notebook`} yr={yr}/>)
     return (
       <div className="center-content">
         <Tabs/>
