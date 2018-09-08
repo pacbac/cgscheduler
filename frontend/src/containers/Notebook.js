@@ -9,7 +9,7 @@ class Notebook extends Component {
   render(){
     let curState = store.getState()
     return (
-      <div className={"notebook" + (this.props.yr === curState.selectedYr ? " selected-notebook" : "")}
+      <div className={"notebook" + (this.props.yr === curState.tabs.selectedYr ? " selected-notebook" : "")}
         id={`${this.props.yr}-notebook`}>
         <TableEdit yr={this.props.yr}/>
           <OptionBtns/>

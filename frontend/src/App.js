@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './css/edit.css';
 import Notebook from './containers/Notebook.js'
 import { store } from './store'
-import { changeTab, setAjaxData } from './actions'
+import { changeTab, setAjaxTable, setAjaxPool } from './actions'
 import { yrs } from './static-data'
 
 class App extends Component {
@@ -10,7 +10,12 @@ class App extends Component {
   componentDidMount(){
     fetch('api/get')
       .then(res => res.json())
-      .then(result => store.dispatch(setAjaxData(result))
+      .then(({...result, status}) => {
+        if(status){
+          store.dispatch(setAjaxTable(result.tableEntries))
+          store.dispatch(setAjaxPool(result.entriesPool))
+        }
+      }
       , err => console.log(err))
   }
 
@@ -35,7 +40,7 @@ class Tabs extends Component {
   render(){
     let labels = yrs.map(yr => (
         <div key={yr+" yr-lbl"}
-          className={"yr-lbl" + (yr === store.getState().selectedYr ? " selected-yr" : "")}
+          className={"yr-lbl" + (yr === store.getState().tabs.selectedYr ? " selected-yr" : "")}
           onClick={this.tabChange}>
           {yr}
         </div>

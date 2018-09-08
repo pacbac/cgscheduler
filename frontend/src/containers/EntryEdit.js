@@ -21,8 +21,8 @@ class EntryEdit extends Component {
     ))
     return (
       <div className="entries-pool"
-        style={{display: (this.props.yr === curState.selectedYr
-          && curState.entriesOpen ? 'flex' : 'none')}}>
+        style={{display: (this.props.yr === curState.tabs.selectedYr
+          && curState.optionBtns.entriesOpen ? 'flex' : 'none')}}>
         {renderCategories}
       </div>
     )

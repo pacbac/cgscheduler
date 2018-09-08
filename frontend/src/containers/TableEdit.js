@@ -17,19 +17,20 @@ class TableEdit extends Component {
     let curTableEntries = curState.tableEntries[this.props.yr]
     let dates = curTableEntries.dates
     let tblEdits = curTableEntries.edits
+    let selectedYr = curState.tabs.selectedYr
 
     // create a 2D array of the edits that contains JSX elements
     renderCategories = categories.map(category => {
       if(category === 'dates'){
         return dates.map((date, i) => {
           return (<Element i={i}
-            key={[curState.selectedYr, category, i].join("_")}
+            key={[selectedYr, category, i].join("_")}
             content={(date in tblEdits && "newDate" in tblEdits[date]) ? tblEdits[date].newDate : date}/>)
         })
       } else {
         return dates.map((date, i) => (
           <Element i={i}
-            key={[curState.selectedYr, category, i].join("_")}
+            key={[selectedYr, category, i].join("_")}
             content={(date in tblEdits && category in tblEdits[date]) ? tblEdits[date][category] : ''}/>
         ))
       }

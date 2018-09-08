@@ -6,11 +6,12 @@ export const categories = ['dates', 'place', 'topic', 'moderator', 'children', '
 // contains the subset of categories only editable by textfield
 export const entryCategories = ['place', 'moderator', 'children', 'youth']
 
-export const year = new Date().getFullYear()
-export const yrs = [year - 1, year, year + 1]
+const selectedYr = new Date().getFullYear()
+export const yrs = [selectedYr - 1, selectedYr, selectedYr + 1]
 
 /* INITIALIZE STATE */
 
+//create a nested object containing empty strings/objs/arrays
 const createBlankTemplate = categoryArr => { // generate blank object template to store data
 
   const createTableEntries = () => ({
@@ -36,12 +37,10 @@ const createBlankTemplate = categoryArr => { // generate blank object template t
   }), {})
 }
 
-export const initialState = {
-  yrs,
-  selectedYr: year,
-  //create an object containing empty strings for each tab
-  tableEntries: createBlankTemplate(categories),
-  entriesPool: createBlankTemplate(entryCategories),
-  tableChanged: false,
-  entriesOpen: false
-}
+export const generateTableEntries = () => createBlankTemplate(categories)
+
+export const generateEntriesPool = () => createBlankTemplate(entryCategories)
+
+export const generateTabs = () => ({yrs, selectedYr})
+
+export const generateOptionBtns = () => ({tableChanged: false, entriesOpen: false})

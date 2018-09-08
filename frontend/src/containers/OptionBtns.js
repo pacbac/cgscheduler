@@ -4,7 +4,7 @@ import { closeEntries, openEntries } from '../actions'
 
 class OptionBtns extends Component {
   editEntriesPool(){
-    let curState = store.getState()
+    let curState = store.getState().optionBtns
     if(curState.entriesOpen)
       store.dispatch(closeEntries())
     else {
@@ -13,7 +13,7 @@ class OptionBtns extends Component {
   }
 
   render(){
-    let curState = store.getState()
+    let curState = store.getState().optionBtns
     return (
       <div className="save-btns">
         {curState.entriesOpen ?
