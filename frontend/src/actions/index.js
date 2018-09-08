@@ -7,3 +7,7 @@ export const deleteEntryElement = text => ({ type: "DELETE_ENTRY", text, exists:
 export const changeTab = selectedYr => ({ type: "CHANGE_TAB", selectedYr })
 
 export const setAjaxData = data => ({ type: "SET_AJAX_DATA",  data })
+
+export const openEntries = () => ({ type: "OPEN_ENTRIES" })
+
+export const closeEntries = () => ({ type: "CLOSE_ENTRIES" })

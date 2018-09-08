@@ -13,7 +13,6 @@ const Entries = ({ entriesPool }) => (
 class EntryEdit extends Component {
   render(){
     let curState = store.getState()
-    console.log(curState)
     let renderCategories = entryCategories.map(category => (
       <div className={category+'-entries'}>
         <h3>{category}</h3>
@@ -22,7 +21,8 @@ class EntryEdit extends Component {
     ))
     return (
       <div className="entries-pool"
-        style={{display: (this.props.yr === curState.selectedYr ? 'show' : 'none')}}>
+        style={{display: (this.props.yr === curState.selectedYr
+          && curState.entriesOpen ? 'flex' : 'none')}}>
         {renderCategories}
       </div>
     )
