@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { categories } from '../static-data'
+import { categories, entryCategories } from '../static-data'
 import { store } from '../store'
 import { editElem, changeSelectedElem } from '../actions'
 
@@ -14,7 +14,7 @@ class TextField extends Component {
   handleEnter(e){
     if(e.which == 13){
       if(this.state.content !== "")
-        store.dispatch(editElem(this.state.content, this.props.location))
+        store.dispatch(editElem(this.state.content, this.props.position))
       store.dispatch(changeSelectedElem({year: undefined, i: undefined, category: undefined}))
     }
   }
@@ -35,7 +35,7 @@ class TextField extends Component {
       && i !== undefined
       && category !== undefined
       && this.state.content !== "")
-      store.dispatch(editElem(this.state.content, this.props.location))
+      store.dispatch(editElem(this.state.content, this.props.position))
   }
 
   render(){
@@ -48,15 +48,47 @@ class TextField extends Component {
   }
 }
 
-const Element = ({i, category, clicked, content, yr}) => {
+class Dropdown extends Component {
+  constructor(props){
+    super(props)
+    this.handleChange = this.handleChange.bind(this)
+    this.state = { content: store.getState.tableEntries}
+  }
+
+  handleChange(e){
+    this.setState({content: e.target.value})
+  }
+
+  componentWillUnmount(){
+    store.dispatch(editElem(this.state.content, this.props.position))
+  }
+
+  render(){
+    let curState = store.getState()
+    let yr = curState.tabs.selectedYr
+    let options = curState.entriesPool[yr][this.props.position.category]
+    return (
+      <select className="edit-field" onChange={this.handleChange}>
+        <option value=""></option>
+        {options.map(elem => <option value={elem}>{elem}</option>)}
+        <option value="Canceled">Canceled</option>
+      </select>
+    )
+  }
+}
+
+const Element = ({position, clicked, content}) => {
   let { tableEntries : { selectedElem } } = store.getState()
   return (
     <div className="element"
-      i={i}
-      category={category}
+      i={position.i}
+      category={position.category}
       onClick={clicked}>
-      {(selectedElem.i === i && selectedElem.category === category) ?
-      <TextField location={{i, category, year: yr}} content={content}/> : content}
+      {(selectedElem.i === position.i && selectedElem.category === position.category) ?
+        (entryCategories.includes(position.category) ?
+        <Dropdown position={position}/> :
+        <TextField position={position} content={content}/>)
+       : content}
     </div>
   )
 }
@@ -92,19 +124,15 @@ class TableEdit extends Component {
       if(category === 'dates'){
         return dates.map((date, i) => {
           return (<Element key={[this.props.yr, category, i].join("_")}
-            i={i}
-            category={category}
+            position={{i, category, year: this.props.yr}}
             clicked={this.clicked}
-            yr={this.props.yr}
             content={(i in tblEdits && "newDate" in tblEdits[i]) ? tblEdits[i].newDate : date}/>)
         })
       } else {
         return dates.map((date, i) => (
           <Element key={[this.props.yr, category, i].join("_")}
-            i={i}
-            category={category}
+            position={{i, category, year: this.props.yr}}
             clicked={this.clicked}
-            yr={this.props.yr}
             content={(i in tblEdits && category in tblEdits[i]) ? tblEdits[i][category] : ''}/>
         ))
       }
