@@ -13,8 +13,7 @@ class TextField extends Component {
 
   handleEnter(e){
     if(e.which == 13){
-      if(this.state.content !== "")
-        store.dispatch(editElem(this.state.content, this.props.position))
+      store.dispatch(editElem(this.state.content, this.props.position))
       store.dispatch(changeSelectedElem({year: undefined, i: undefined, category: undefined}))
     }
   }
