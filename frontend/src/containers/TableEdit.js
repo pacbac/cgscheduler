@@ -52,7 +52,17 @@ class Dropdown extends Component {
   constructor(props){
     super(props)
     this.handleChange = this.handleChange.bind(this)
-    this.state = { content: store.getState.tableEntries}
+    let pos = this.props.position
+    let tblEntries = store.getState().tableEntries
+    let content;
+    console.log(pos.year, pos.i, pos.category)
+    if(tblEntries[pos.year] === undefined
+      || tblEntries[pos.year].edits[pos.i] === undefined
+      || tblEntries[pos.year].edits[pos.i][pos.category] === undefined)
+      content = ''
+    else
+      content = tblEntries[pos.year].edits[pos.i][pos.category]
+    this.state = { content }
   }
 
   handleChange(e){
@@ -70,7 +80,10 @@ class Dropdown extends Component {
     return (
       <select className="edit-field" onChange={this.handleChange}>
         <option value=""></option>
-        {options.map(elem => <option value={elem}>{elem}</option>)}
+        {options.map(elem => (
+          <option value={elem}
+            selected={this.state.content === elem}>{elem}</option>)
+        )}
         <option value="Canceled">Canceled</option>
       </select>
     )
@@ -84,7 +97,9 @@ const Element = ({position, clicked, content}) => {
       i={position.i}
       category={position.category}
       onClick={clicked}>
-      {(selectedElem.i === position.i && selectedElem.category === position.category) ?
+      {(selectedElem.i === position.i
+        && selectedElem.category === position.category
+        && selectedElem.year === position.year) ?
         (entryCategories.includes(position.category) ?
         <Dropdown position={position}/> :
         <TextField position={position} content={content}/>)
