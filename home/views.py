@@ -29,7 +29,11 @@ def getData(request):
         #populate table edits
         editsLowerBound, editsUpperBound = datetime.date(int(yr), 1, 1), datetime.date(int(yr)+1, 1, 1)
         tableedits = TableEdit.objects.filter(date__gte=editsLowerBound, date__lt=editsUpperBound)
-        response['tableEntries'][yr]['edits'] = { date_utils.dateToStr(edit.date): edit.toDict() for edit in tableedits }
+        curTableEntries = response['tableEntries'][yr]
+        curTableEntries['edits'] = {
+            # (index of edit in table) : (the edit's contents)
+            curTableEntries['dates'].index(date_utils.dateToStr(edit.date)): edit.toDict()
+            for edit in tableedits }
         #populate entries pool
         for ctgry in response['entriesPool'][yr]:
             if ctgry == 'dates': continue # dates has already been initialized
