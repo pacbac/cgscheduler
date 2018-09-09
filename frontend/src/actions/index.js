@@ -6,7 +6,11 @@ export const setAjaxPool = poolData => ({type: "SET_AJAX_POOL", poolData })
 
 /* SET NEW DATA FROM MANUAL ENTRY */
 
-export const editTableElement = text => ({ type: "EDIT_ELEMENT", text })
+//change the selected element itself
+export const changeSelectedElem = data => ({ type: "CHANGE_SELECTED_ELEM", data })
+
+// edit contents of the selected element
+export const editElem = (text, location) => ({ type: "EDIT_ELEM", text, location })
 
 export const addEntryElement = text => ({ type: "ADD_ENTRY",  text, exists: true })
 

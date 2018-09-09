@@ -16,10 +16,7 @@ const createBlankTemplate = categoryArr => { // generate blank object template t
 
   const createTableEntries = () => ({
     dates: [...Array(24)].map(() => ''),
-    edits: categoryArr.reduce((total, category) => ({
-      ...total,
-      [category]: {}
-    }), {})
+    edits: {}
   })
 
   const createEntriesPool = () => categoryArr.reduce((total, category) => ({
@@ -37,7 +34,14 @@ const createBlankTemplate = categoryArr => { // generate blank object template t
   }), {})
 }
 
-export const generateTableEntries = () => createBlankTemplate(categories)
+export const generateTableEntries = () => ({
+  ...createBlankTemplate(categories),
+  selectedElem: { //gives the "coordinates" for the element currently being edited
+    year: undefined,
+    i: undefined,
+    category: undefined
+  }
+})
 
 export const generateEntriesPool = () => createBlankTemplate(entryCategories)
 

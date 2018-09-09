@@ -9,5 +9,5 @@ export default combineReducers({
   tabs,
   tableEntries,
   optionBtns,
-  entriesPool
+  entriesPool,
 })
