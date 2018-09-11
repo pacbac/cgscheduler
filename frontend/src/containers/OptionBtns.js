@@ -5,11 +5,16 @@ import { closeEntries, openEntries } from '../actions'
 class OptionBtns extends Component {
   editEntriesPool(){
     let curState = store.getState().optionBtns
-    if(curState.entriesOpen)
+    if(curState.entriesOpen){
       store.dispatch(closeEntries())
-    else {
+
+    } else {
       store.dispatch(openEntries())
     }
+  }
+
+  cancelPool(){
+    store.dispatch(closeEntries())
   }
 
   render(){
@@ -20,7 +25,10 @@ class OptionBtns extends Component {
           [(<button key="edit-entries-btn"
             name="edit-entries-pool"
             onClick={this.editEntriesPool}>Save Entries Pool</button>),
-          <button key="cancel-entries-btn" name="cancel-entries">Cancel Entries</button>] :
+          (<button key="cancel-entries-btn"
+            name="cancel-entries"
+            onClick={this.cancelPool}>Cancel Entries</button>
+          )] :
           <button key="edit-entries-btn"
             name="edit-entries-pool"
             onClick={this.editEntriesPool}>Edit Entries Pool</button>}

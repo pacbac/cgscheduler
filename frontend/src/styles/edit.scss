@@ -44,12 +44,10 @@
 
     &[name="save-tbl"] {
       background-color: #9e4f3f;
-      display: none;
     }
 
     &[name="cancel"], &[name="cancel-entries"] {
       background-color: #afafaf;
-      display: none;
     }
 
     &[name="edit-entries-pool"] {
@@ -73,14 +71,16 @@
 }
 
 @each $entry in $entries-list {
+  $header-height: 40px;
   .#{$entry}-entries {
     max-width: 24%;
     flex-grow: 1;
     box-shadow: $half-black 1px 1px 3px;
     background-color: $very-light-green;
+    position: relative;
     > h3 {
-      @include dimensions(100%, 40px);
-      @include textCenter(40px);
+      @include dimensions(100%, $header-height);
+      @include textCenter($header-height);
       color: white;
       background-color: $dark-green;
       margin: 0;
@@ -93,7 +93,8 @@
     }
 
     .entries {
-      min-height: 40px;
+      height: calc(100% - #{$header-height});
+      box-sizing: border-box;
       background-color: $very-light-green;
       color: black;
       padding: 15px;
@@ -104,11 +105,13 @@
 
       textarea {
         @include border(solid, $textfld-border, 2px, 5px);
-        width: 95%;
+        @include dimensions(95%, 100%);
         display: block;
         margin: auto;
         resize: none;
         margin-bottom: 10px;
+        min-height: 250px;
+        box-sizing: border-box;
         font: {
           family: Poppins;
           size: 16px;

@@ -12,6 +12,7 @@ class App extends Component {
       .then(res => res.json())
       .then(({...result, status}) => {
         if(status){
+          console.log(result)
           store.dispatch(setAjaxTable(result.tableEntries))
           store.dispatch(setAjaxPool(result.entriesPool))
         }

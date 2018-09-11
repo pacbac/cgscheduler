@@ -12,33 +12,39 @@ def getData(request):
     tabs = [ str(thisYear+yr) for yr in range(-1, 2) ]
     response = {
         # key: date in mm/dd/yyyy, value: table edit db obj
-        'tableEntries': { yr: {
-            'dates': date_utils.loadDates(startdate=datetime.date(int(yr), 1, 1))
-            # edits : { ... } is initialized later
-        } for yr in tabs },
-        'entriesPool': { yr: {
-            'place': [],
-            'moderator': [],
-            'children': [],
-            'youth': []
-        } for yr in tabs },
+        'tableEntries': {},
+        'entriesPool': {},
         'status': True
     }
 
+    entryCategories = ['place', 'moderator', 'children', 'youth']
+
     for yr in tabs:
+        # populate table with default, auto-generated dates first before putting actual entries
+        dateList = date_utils.loadDates(startdate=datetime.date(int(yr), 1, 1))
+        for tableIndex, date in enumerate(dateList):
+            flattenedKey = ", ".join([yr, str(tableIndex), 'dates'])
+            response['tableEntries'][flattenedKey] = date
+
         #populate table edits
         editsLowerBound, editsUpperBound = datetime.date(int(yr), 1, 1), datetime.date(int(yr)+1, 1, 1)
         tableedits = TableEdit.objects.filter(date__gte=editsLowerBound, date__lt=editsUpperBound)
-        curTableEntries = response['tableEntries'][yr]
-        curTableEntries['edits'] = {
-            # (index of edit in table) : (the edit's contents)
-            curTableEntries['dates'].index(date_utils.dateToStr(edit.date)): edit.toDict()
-            for edit in tableedits }
+        for edit in tableedits:
+            tableIndex = dateList.index(date_utils.dateToStr(edit.date))
+            editDict = edit.toDict()
+
+            for ctgry in editDict:
+                if ctgry == 'correctDate': ctgry = 'dates'
+                # flatten the object for entriesPool by combining yr, tableIndex, and category to one key
+                flattenedKey = ", ".join([yr, str(tableIndex), ctgry])
+                response['tableEntries'][flattenedKey] = editDict[ctgry]
+
         #populate entries pool
-        for ctgry in response['entriesPool'][yr]:
-            if ctgry == 'dates': continue # dates has already been initialized
+        for ctgry in entryCategories:
+            # flatten the object for entriesPool by combining yr and category to one key
+            response['entriesPool'][", ".join([yr, ctgry])] = []
             for entry in EntryEdit.objects.filter(yr=int(yr), category=ctgry):
-                response['entriesPool'][yr][ctgry].append(entry.name)
+                response['entriesPool'][yr+", "+ctgry].append(entry.name)
 
     return HttpResponse(json.dumps(response))
 

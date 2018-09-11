@@ -12,39 +12,25 @@ export const yrs = [selectedYr - 1, selectedYr, selectedYr + 1]
 /* INITIALIZE STATE */
 
 //create a nested object containing empty strings/objs/arrays
-const createBlankTemplate = categoryArr => { // generate blank object template to store data
 
-  const createTableEntries = () => ({
-    dates: [...Array(24)].map(() => ''),
-    edits: {}
-  })
+export const generateTableEntries = () => ({})
 
-  const createEntriesPool = () => categoryArr.reduce((total, category) => ({
-    ...total,
-    [category]: []
-  }), {})
-
-  /*
-    a table uses all 7 categories, whereas the entries pool only uses 4
-    so this property can be used to determine what kind of object we should return
-  */
-  return yrs.reduce((total, yr) => ({
-    ...total,
-    [yr]: categoryArr.length === 7 ? createTableEntries() : createEntriesPool()
-  }), {})
-}
-
-export const generateTableEntries = () => ({
-  ...createBlankTemplate(categories),
-  selectedElem: { //gives the "coordinates" for the element currently being edited
-    year: undefined,
-    i: undefined,
-    category: undefined
-  }
-})
-
-export const generateEntriesPool = () => createBlankTemplate(entryCategories)
+export const generateEntriesPool = () => ({})
 
 export const generateTabs = () => ({yrs, selectedYr})
 
+export const generateSelected = () => ({
+  selectedTblElem: { //gives the "coordinates" for the table slot currently being edited
+    year: undefined,
+    i: undefined,
+    category: undefined
+  },
+  clickedPools: {}
+})
+
 export const generateOptionBtns = () => ({tableChanged: false, entriesOpen: false})
+
+export const generateAPIResponse = () => ({
+  edits: yrs.reduce((total, yr) => ({ ...total, [yr]: {} }), {}),
+  entries: yrs.reduce((total, yr) => ({ ...total, [yr]: {} }), {})
+})

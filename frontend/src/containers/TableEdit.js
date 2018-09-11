@@ -90,15 +90,15 @@ class Dropdown extends Component {
 }
 
 const Element = ({position, clicked, content}) => {
-  let { tableEntries : { selectedElem } } = store.getState()
+  let { selectedElems: { selectedTblElem } } = store.getState()
   return (
     <div className="element"
       i={position.i}
       category={position.category}
       onClick={clicked}>
-      {(selectedElem.i === position.i
-        && selectedElem.category === position.category
-        && selectedElem.year === position.year) ?
+      {(selectedTblElem.i === position.i
+        && selectedTblElem.category === position.category
+        && selectedTblElem.year === position.year) ?
         (entryCategories.includes(position.category) ?
         <Dropdown position={position}/> :
         <TextField position={position} content={content}/>)
@@ -125,32 +125,21 @@ class TableEdit extends Component {
   }
 
   getElements(){
-    let curState = store.getState()
+    let curTableEntries = store.getState().tableEntries
     let elements = []
     let renderCategories;
 
-    let curTableEntries = curState.tableEntries[this.props.yr]
-    let dates = curTableEntries.dates
-    let tblEdits = curTableEntries.edits
-
+    const arr24 = [...Array(24)] //a temporary 24-slot array for the 24 slots per category
     // create a 2D array of the edits that contains JSX elements
-    renderCategories = categories.map(category => {
-      if(category === 'dates'){
-        return dates.map((date, i) => {
-          return (<Element key={[this.props.yr, category, i].join("_")}
-            position={{i, category, year: this.props.yr}}
-            clicked={this.clicked}
-            content={(i in tblEdits && "newDate" in tblEdits[i]) ? tblEdits[i].newDate : date}/>)
-        })
-      } else {
-        return dates.map((date, i) => (
-          <Element key={[this.props.yr, category, i].join("_")}
-            position={{i, category, year: this.props.yr}}
-            clicked={this.clicked}
-            content={(i in tblEdits && category in tblEdits[i]) ? tblEdits[i][category] : ''}/>
-        ))
-      }
-    })
+    renderCategories = categories.map(category => (
+      arr24.map((date, i) => {
+        const flattenedKey = [this.props.yr, i, category].join(", ")
+        return (<Element key={[this.props.yr, i, category].join("_")}
+          position={{i, category, year: this.props.yr}}
+          clicked={this.clicked}
+          content={flattenedKey in curTableEntries ? curTableEntries[flattenedKey] : ''}/>)
+      })
+    ))
     // convert the renderCategories 2D array into a renderable 1D mapping array (with div wrappers)
     for(let i = 0; i < categories.length; i++){
       elements.push((
