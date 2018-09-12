@@ -49,7 +49,7 @@ class EntryEdit extends Component {
         prevEntries.filter(entry => !curEntries.includes(entry))
           .map(entry => diff[category][entry] = false)
       })
-      store.dispatch(editAPIPool(diff, this.props.year))
+      store.dispatch(editAPIPool(diff, this.props.yr))
       /*
          NOTE: if all entries were changed to be deleted, the array will have one
          element that is an empty string, not an empty array.
