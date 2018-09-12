@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { entryCategories } from '../static-data'
 import { store } from '../store'
 import { closeEntries, openEntries, editAPIPool, editEntryPool } from '../actions'
+import csrfToken from '../JSUtils/cookie.js'
+import axios from 'axios'
 
 class Entries extends Component {
   render(){
@@ -58,7 +60,17 @@ class EntryEdit extends Component {
       // remove potential duplicates from array
       store.dispatch(editEntryPool(this.state.entries, this.props.yr))
       store.dispatch(closeEntries())
-      console.log(store.getState())
+      console.log({[this.props.yr]: diff})
+      fetch('api/updateentries', {
+        method: 'POST',
+        headers: {
+          //'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({[this.props.yr]: diff})
+      }).then(response => response.json())
+        .then({...json, status} => console.log(status ? 'Posted' : 'Unsuccessful'))
     } else
       store.dispatch(openEntries())
   }
@@ -82,7 +94,6 @@ class EntryEdit extends Component {
 
   render(){
     let curState = store.getState()
-    console.log(this.state)
     if(curState.optionBtns.entriesOpen){
       let renderCategories = entryCategories.map(category => (
         <div key={this.props.yr + category+'-entries'} className={category+'-entries'}>

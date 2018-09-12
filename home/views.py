@@ -86,22 +86,22 @@ def updateEdits(request):
 
 def updateEntries(request):
     if request.method != 'POST': return HttpResponse(json.dumps({ 'status': False }))
-    POST = QueryDict.dict(request.POST)
+    POST = json.loads(request.body.decode('utf-8'))
     response = { 'status': True }
-    for key in POST.keys():
-        splitKeys = tuple(key_utils.splitKey(key)) # splitKeys should look like {0: entries, 1: yr, 2: category, 3: personName }
-        boolVal = True if POST[key] == 'true' else False # False should be default to protect against unintended values
-        if key_utils.checkKeys(splitKeys):
-            yr, ctgry, name = splitKeys[1:]
-            entry = EntryEdit.objects.filter(yr=yr, name=name, category=ctgry)
-            if not entry.exists() and boolVal: #insert a new object
-                entry = EntryEdit(yr=yr, name=name, category=ctgry)
-                entry.save()
-                print("New entry saved: (%s)" % str(entry))
-            elif entry.exists() and not boolVal: #delete an existing object
-                entry.delete()
-                print("Deleted object: (%s, %s, %s)" % (yr, ctgry, name))
-        else:
-            response[key] = "Error: Could not post to server due to improper formatting"
-            response['status'] = False
+    for yr in POST.keys():
+        for ctgry in POST[yr]:
+            for name in POST[yr][ctgry]:
+                boolVal = POST[yr][ctgry][name]
+                if key_utils.checkKeys(['entries', yr, ctgry, name]):
+                    entry = EntryEdit.objects.filter(yr=yr, name=name, category=ctgry)
+                    if not entry.exists() and boolVal: #insert a new object
+                        entry = EntryEdit(yr=yr, name=name, category=ctgry)
+                        entry.save()
+                        print("New entry saved: (%s)" % str(entry))
+                    elif entry.exists() and not boolVal: #delete an existing object
+                        entry.delete()
+                        print("Deleted object: (%s, %s, %s)" % (yr, ctgry, name))
+                else:
+                    response[key] = "Error: Could not post to server due to improper formatting"
+                    response['status'] = False
     return HttpResponse(json.dumps(response))
