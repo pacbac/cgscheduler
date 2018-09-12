@@ -1,4 +1,3 @@
-import { editTableElement, addEntryElement, deleteEntryElement } from '../actions'
 import { combineReducers } from 'redux'
 import tableEntries from './TableEdit.js'
 import entriesPool from './EntryEdit.js'

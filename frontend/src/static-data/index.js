@@ -24,13 +24,12 @@ export const generateSelected = () => ({
     year: undefined,
     i: undefined,
     category: undefined
-  },
-  clickedPools: {}
+  }
 })
 
 export const generateOptionBtns = () => ({tableChanged: false, entriesOpen: false})
 
-export const generateAPIResponse = () => ({
-  edits: yrs.reduce((total, yr) => ({ ...total, [yr]: {} }), {}),
-  entries: yrs.reduce((total, yr) => ({ ...total, [yr]: {} }), {})
+export const generateAPIRequest = () => ({
+  edits: {},
+  entries: {}
 })

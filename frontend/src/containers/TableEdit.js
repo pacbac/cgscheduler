@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { categories, entryCategories } from '../static-data'
 import { store } from '../store'
-import { editElem, changeSelectedElem } from '../actions'
+import { editElem, changeSelectedElem, editAPITableElem } from '../actions'
 
 class TextField extends Component {
   constructor(props){
@@ -12,8 +12,9 @@ class TextField extends Component {
   }
 
   handleEnter(e){
-    if(e.which == 13){
+    if(e.which === 13){
       store.dispatch(editElem(this.state.content, this.props.position))
+      store.dispatch(editAPITableElem(this.state.content, this.props.position))
       store.dispatch(changeSelectedElem({year: undefined, i: undefined, category: undefined}))
     }
   }
@@ -29,12 +30,15 @@ class TextField extends Component {
     we perform a last-minute save of the content before the text field becomes unmounted
   */
   componentWillUnmount(){
-    let {year, category, i} = store.getState().tableEntries.selectedElem
+    let {year, category, i} = store.getState().selectedElems.selectedTblElem
     if(year !== undefined
       && i !== undefined
       && category !== undefined
-      && this.state.content !== "")
-      store.dispatch(editElem(this.state.content, this.props.position))
+      && this.state.content !== ""){
+        store.dispatch(editElem(this.state.content, this.props.position))
+        store.dispatch(editAPITableElem(this.state.content, this.props.position))
+      }
+    console.log(store.getState())
   }
 
   render(){
@@ -51,16 +55,10 @@ class Dropdown extends Component {
   constructor(props){
     super(props)
     this.handleChange = this.handleChange.bind(this)
-    let pos = this.props.position
+    let {year, i, category} = this.props.position
     let tblEntries = store.getState().tableEntries
-    let content;
-    console.log(pos.year, pos.i, pos.category)
-    if(tblEntries[pos.year] === undefined
-      || tblEntries[pos.year].edits[pos.i] === undefined
-      || tblEntries[pos.year].edits[pos.i][pos.category] === undefined)
-      content = ''
-    else
-      content = tblEntries[pos.year].edits[pos.i][pos.category]
+    const flattenedKey = [year, i, category].join(", ")
+    const content = tblEntries[flattenedKey] || ''
     this.state = { content }
   }
 
@@ -70,20 +68,22 @@ class Dropdown extends Component {
 
   componentWillUnmount(){
     store.dispatch(editElem(this.state.content, this.props.position))
+    store.dispatch(editAPITableElem(this.state.content, this.props.position))
   }
 
   render(){
     let curState = store.getState()
     let yr = curState.tabs.selectedYr
-    let options = curState.entriesPool[yr][this.props.position.category]
+    let options = curState.entriesPool[`${yr}, ${this.props.position.category}`] || []
+    options.push("")
+    options.push("Canceled")
+    options = Array.from(new Set(options)) // remove duplicates
     return (
       <select className="edit-field" onChange={this.handleChange}>
-        <option value=""></option>
         {options.map(elem => (
           <option value={elem}
             selected={this.state.content === elem}>{elem}</option>)
         )}
-        <option value="Canceled">Canceled</option>
       </select>
     )
   }
@@ -116,7 +116,7 @@ class TableEdit extends Component {
   // when an element gets clicked on
   clicked(e){
     //only applies to elements, not children inside elements
-    if(e.target.className == "element"){
+    if(e.target.className === "element"){
       let i = parseInt(e.target.getAttribute("i"))
       let category = e.target.getAttribute("category")
       let year = store.getState().tabs.selectedYr
@@ -134,10 +134,11 @@ class TableEdit extends Component {
     renderCategories = categories.map(category => (
       arr24.map((date, i) => {
         const flattenedKey = [this.props.yr, i, category].join(", ")
+        const value = curTableEntries[flattenedKey] || ''
         return (<Element key={[this.props.yr, i, category].join("_")}
           position={{i, category, year: this.props.yr}}
           clicked={this.clicked}
-          content={flattenedKey in curTableEntries ? curTableEntries[flattenedKey] : ''}/>)
+          content={value}/>)
       })
     ))
     // convert the renderCategories 2D array into a renderable 1D mapping array (with div wrappers)

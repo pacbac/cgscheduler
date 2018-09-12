@@ -21,7 +21,6 @@ class App extends Component {
   }
 
   render(){
-    let curState = store.getState()
     let yrNotebooks = yrs.map(yr => <Notebook key={`${yr}-notebook`} yr={yr}/>)
     return (
       <div className="center-content">
