@@ -72,7 +72,6 @@ class EntryEdit extends Component {
         })
     } else
       store.dispatch(openEntries())
-    console.log(store.getState())
   }
 
   change(e){

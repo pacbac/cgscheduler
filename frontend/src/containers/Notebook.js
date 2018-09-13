@@ -16,8 +16,8 @@ class Notebook extends Component {
     return (
       <div className={"notebook" + (this.props.yr === curState.tabs.selectedYr ? " selected-notebook" : "")}
         id={`${this.props.yr}-notebook`}>
-        <TableEdit yr={this.props.yr}/>
         <h3>{curState.h3Message.msg !== '' ? this.timedMsg(curState.h3Message.msg) : ''}</h3>
+        <TableEdit yr={this.props.yr}/>
         <EntryEdit yr={this.props.yr}/>
       </div>
     )
