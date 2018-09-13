@@ -29,6 +29,7 @@ class TextField extends Component {
     // edit apirequest object when this text changes in case save table is pressed
     // before the textfield is unmounted
     store.dispatch(editAPITableElem(e.target.value, this.props.position))
+    store.dispatch(tableChanged())
   }
 
   /*
@@ -46,7 +47,6 @@ class TextField extends Component {
       store.dispatch(editElem(this.state.content, this.props.position))
       store.dispatch(editAPITableElem(this.state.content, this.props.position))
     }
-    store.dispatch(tableChanged())
   }
 
   render(){
@@ -202,7 +202,6 @@ class TableEdit extends Component {
   }
 
   render(){
-    console.log(store.getState())
     return (
       [<div className="table">
         {this.getElements()}
