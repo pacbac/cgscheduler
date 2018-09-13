@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import TableEdit from './TableEdit.js'
 import EntryEdit from './EntryEdit.js'
-import OptionBtns from './OptionBtns.js'
 import { store } from '../store'
 import { resetMsg } from '../actions'
 
