@@ -26,7 +26,7 @@ def editRemarks(obj, newRemarks):
     obj.update(remarks=newRemarks)
 
 CATGRIES = {
-                'newDate': editNewDate,
+                'dates': editNewDate,
                 'place': editPlace,
                 'topic': editTopic,
                 'moderator': editMod,
@@ -65,7 +65,7 @@ def editInstRemarks(inst, newRemarks):
     inst.save(update_fields=['remarks'])
 
 INSTCATGRIES = {
-                'newDate': editInstNewDate,
+                'dates': editInstNewDate,
                 'place': editInstPlace,
                 'topic': editInstTopic,
                 'moderator': editInstMod,

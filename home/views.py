@@ -34,9 +34,8 @@ def getData(request):
             editDict = edit.toDict()
 
             for ctgry in editDict:
-                if ctgry == 'correctDate': ctgry = 'dates'
                 # flatten the object for entriesPool by combining yr, tableIndex, and category to one key
-                flattenedKey = ", ".join([yr, str(tableIndex), ctgry])
+                flattenedKey = ", ".join([yr, str(tableIndex), (ctgry if ctgry != 'newDate' else 'dates')])
                 response['tableEntries'][flattenedKey] = editDict[ctgry]
 
         #populate entries pool
@@ -50,34 +49,33 @@ def getData(request):
 
 def updateEdits(request):
     if request.method != 'POST': return HttpResponse({ 'dataStatus': False })
-    POST = QueryDict.dict(request.POST)
+    POST = json.loads(request.body.decode('utf-8'))
     response = { 'dataStatus': True } # status = True means post was success
     for key in POST.keys():
-        # splitKey is always in the form {0: 'edits', 1: 'yr', 2: 'dateIndex', 3: 'category'}
-        splitKeys = tuple(key_utils.splitKey(key))
-        ctgry = splitKeys[3]
-        if (key_utils.checkKeys(splitKeys) and
-            not (ctgry == 'newDate' and not date_utils.checkDateFormat(POST[key]))): #value checked for invalid date formats
-            entryYr, dateIndex = splitKeys[1], splitKeys[2]
+        # splitKey input example: '2018, 2, moderator'
+        entryYr, dateIndex, ctgry = tuple(key_utils.splitKey(key))
+        if (key_utils.checkKeys(['edits', entryYr, dateIndex, ctgry]) and
+            not (ctgry == 'dates' and not date_utils.checkDateFormat(POST[key]))): #value checked for invalid date formats
             entryYr, dateIndex = int(entryYr), int(dateIndex)
             origDate = date_utils.loadDates(startdate=datetime.date(entryYr, 1, 1))[dateIndex]
             edit = TableEdit.objects.filter(date__startswith=date_utils.strToDate(origDate))
             if not edit.exists():
-                if (not ((ctgry == 'newDate' and origDate == POST[key]) # ignore entry if date is just default
-                    or (ctgry != 'newDate' and POST[key] == ""))): # ignore entry if category is empty
+                if (not ((ctgry == 'dates' and origDate == POST[key]) # ignore entry if date is just default
+                    or (ctgry != 'dates' and POST[key] == ""))): # ignore entry if category is empty
                     edit = TableEdit(date=date_utils.strToDate(origDate))
                     edit.save()
                     db_utils.INSTCATGRIES[ctgry](edit, POST[key])
                     print("New table entry saved: (%s)" % str(edit))
             else:
                 logStr = "Table entry modified: (%s)" % str(edit[0])
-                if (ctgry == 'newDate' and origDate == POST[key]) or (ctgry != 'newDate' and POST[key] == ""):
+                if (ctgry == 'dates' and origDate == POST[key]) or (ctgry != 'dates' and POST[key] == ""):
                     db_utils.CATGRIES[ctgry](edit, None)
                     if edit[0].isEmpty():
                         edit.delete()
                         logStr = "Table entry deleted: (%s, %s)" % (origDate, ctgry)
                 else:
                     db_utils.CATGRIES[ctgry](edit, POST[key]) # each entry has varied properties
+                    logStr = "Table entry modified: (%s)" % str(edit[0])
                 print(logStr)
         else:
             response[key] = "Error: Could not post to server due to improper formatting"

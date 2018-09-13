@@ -5,8 +5,12 @@ import {
   editElem,
   changeSelectedElem,
   editAPITableElem,
-  tableChanged
+  tableChanged,
+  changeMsg,
+  setAjaxPool,
+  setAjaxTable
  } from '../actions'
+ import csrfToken from '../JSUtils/cookie.js'
 
 class TextField extends Component {
   constructor(props){
@@ -201,6 +205,35 @@ class TableEdit extends Component {
     return elements
   }
 
+  submit(e){
+    console.log(store.getState())
+    fetch('api/updateedits', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken
+      },
+      body: JSON.stringify(store.getState().apiRequest.edits)
+    }).then(res => res.json())
+      .then(({...json, dataStatus}) => {
+        store.dispatch(changeMsg(dataStatus))
+      })
+    e.preventDefault()
+  }
+
+  cancelEdits(){
+    // fetch and repopulate table with old data
+    fetch('api/get')
+      .then(res => res.json())
+      .then(({...result, dataStatus}) => {
+        if(dataStatus){
+          store.dispatch(setAjaxTable(result.tableEntries))
+          store.dispatch(setAjaxPool(result.entriesPool))
+        }
+      }
+      , err => console.log(err))
+  }
+
   render(){
     return (
       [<div className="table">
@@ -208,8 +241,8 @@ class TableEdit extends Component {
       </div>,
       (store.getState().optionBtns.tableChanged ?
         (<div className="save-btns">
-          <button type="submit" name="save-tbl">Save Tables</button>
-          <button name="cancel">Cancel</button>
+          <button type="submit" name="save-tbl" onClick={this.submit}>Save Tables</button>
+          <button name="cancel" onClick={this.cancelEdits}>Cancel</button>
         </div>) : null)]
     )
   }

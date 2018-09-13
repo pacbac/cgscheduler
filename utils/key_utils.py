@@ -2,7 +2,7 @@ from .date_utils import loadDates
 import re, datetime
 
 SUBKEYS = {
-                'newDate': True,
+                'dates': True,
                 'place': True,
                 'topic': True,
                 'moderator': True,
@@ -20,7 +20,7 @@ def checkEditsKeys(keys):
         return False
 
 def checkEntriesKeys(keys):
-    return keys[2] in SUBKEYS and keys[2] != 'newDate' and keys[2] != 'topic' and keys[2] != 'remarks'
+    return keys[2] in SUBKEYS and keys[2] != 'dates' and keys[2] != 'topic' and keys[2] != 'remarks'
 
 POSTTYPES = {
                 'edits': checkEditsKeys,
@@ -29,7 +29,7 @@ POSTTYPES = {
 
 # split the incorrectly formatted key up properly, higher index = more nested in original JSON
 def splitKey(key):
-    return list(filter(lambda e: e != '', re.split("[\[\]]", key)))
+    return list(filter(lambda e: e != '', re.split(", ", key)))
 
 # validate that the splitted keys are in proper format
 def checkKeys(keys):
