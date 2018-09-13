@@ -24,6 +24,8 @@ export const openEntries = () => ({ type: "OPEN_ENTRIES" })
 
 export const closeEntries = () => ({ type: "CLOSE_ENTRIES" })
 
+export const tableChanged = () => ({ type: "TABLE_CHANGED" })
+
 
 /* TAB ACTIONS */
 

@@ -6,8 +6,8 @@ export default (state = generateOptionBtns(), action) => {
       return { ...state, entriesOpen: true }
     case "CLOSE_ENTRIES":
       return { ...state, entriesOpen: false }
-    case "SAVE_ENTRIES":
-      return state
+    case "TABLE_CHANGED":
+      return { ...state, tableChanged: true }
     default: return state
   }
 }

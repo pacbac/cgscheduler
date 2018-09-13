@@ -1,7 +1,12 @@
 import React, { Component } from 'react'
 import { categories, entryCategories } from '../static-data'
 import { store } from '../store'
-import { editElem, changeSelectedElem, editAPITableElem } from '../actions'
+import {
+  editElem,
+  changeSelectedElem,
+  editAPITableElem,
+  tableChanged
+ } from '../actions'
 
 class TextField extends Component {
   constructor(props){
@@ -21,6 +26,9 @@ class TextField extends Component {
 
   handleChange(e){
     this.setState({ content: e.target.value })
+    // edit apirequest object when this text changes in case save table is pressed
+    // before the textfield is unmounted
+    store.dispatch(editAPITableElem(e.target.value, this.props.position))
   }
 
   /*
@@ -38,6 +46,7 @@ class TextField extends Component {
       store.dispatch(editElem(this.state.content, this.props.position))
       store.dispatch(editAPITableElem(this.state.content, this.props.position))
     }
+    store.dispatch(tableChanged())
   }
 
   render(){
@@ -77,14 +86,14 @@ class Dropdown extends Component {
   // @param val: the new value of the dropdown (that hasn't been officially changed yet)
   checkRowErr(val){
     let { year, i, category } = this.props.position
-    if(category == "place") return //place should be omitted from evaluation
-    if(val == "Canceled" || val == "") return //"Canceled" doesn't count as duplicate
+    if(category === "place") return //place should be omitted from evaluation
+    if(val === "Canceled" || val === "") return //"Canceled" doesn't count as duplicate
     let tblEntries = store.getState().tableEntries
-    if(category == "youth" || category == "children"){
+    if(category === "youth" || category === "children"){
       // if not the first item, check if the item above is the same value
       if(tblEntries[`${year}, ${i}, moderator`] === val)
         alert(`Warning: ${val} has conflicts with other roles for ${tblEntries[`${year}, ${i}, dates`]}.`)
-    } else if(category == "moderator"){
+    } else if(category === "moderator"){
       if(tblEntries[`${year}, ${i}, children`] === val || tblEntries[`${year}, ${i}, youth`] === val)
         alert(`Warning: ${val} has conflicts with other roles for ${tblEntries[`${year}, ${i}, dates`]}.`)
     }
@@ -93,8 +102,8 @@ class Dropdown extends Component {
   // @param val: the new value of the dropdown (that hasn't been officially changed yet)
   checkColErr(val){
     let { year, i, category } = this.props.position
-    if(category == "place") return //place should be omitted from evaluation
-    if(val == "Canceled" || val== "") return//"Canceled" doesn't count as duplicate
+    if(category === "place") return //place should be omitted from evaluation
+    if(val === "Canceled" || val === "") return//"Canceled" doesn't count as duplicate
     let tblEntries = store.getState().tableEntries
     if(i > 0 && tblEntries[`${year}, ${i-1}, ${category}`] === val)
       alert(`Warning: ${val} is assigned consecutively to ${category} on ${tblEntries[`${year}, ${i-1}, dates`]} and ${tblEntries[`${year}, ${i}, dates`]}.`)
@@ -104,6 +113,7 @@ class Dropdown extends Component {
 
   componentWillUnmount(){
     store.dispatch(editElem(this.state.content, this.props.position))
+    store.dispatch(tableChanged())
   }
 
   render(){
@@ -111,7 +121,7 @@ class Dropdown extends Component {
     let yr = curState.tabs.selectedYr
     let options = curState.entriesPool[`${yr}, ${this.props.position.category}`] || []
     // remove duplicates and remove potential '' and 'Canceled' options if they exist
-    options = Array.from(new Set(options)).filter(option => option != '' && option != 'Canceled')
+    options = Array.from(new Set(options)).filter(option => option !== '' && option !== 'Canceled')
     return (
       <select className="edit-field" onChange={this.handleChange}>
         <option value=''></option>
@@ -192,10 +202,16 @@ class TableEdit extends Component {
   }
 
   render(){
+    console.log(store.getState())
     return (
-      <div className="table">
+      [<div className="table">
         {this.getElements()}
-      </div>
+      </div>,
+      (store.getState().optionBtns.tableChanged ?
+        (<div className="save-btns">
+          <button type="submit" name="save-tbl">Save Tables</button>
+          <button name="cancel">Cancel</button>
+        </div>) : null)]
     )
   }
 }
