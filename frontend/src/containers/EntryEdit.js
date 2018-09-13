@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import { entryCategories } from '../static-data'
 import { store } from '../store'
-import { closeEntries, openEntries, editAPIPool, editEntryPool } from '../actions'
+import { closeEntries, openEntries, editAPIPool, editEntryPool, changeMsg } from '../actions'
 import csrfToken from '../JSUtils/cookie.js'
-import axios from 'axios'
 
 class Entries extends Component {
   render(){
@@ -22,7 +21,6 @@ class EntryEdit extends Component {
     super(props)
 
     this.state = {
-      entriesOpen: store.getState().optionBtns.entriesOpen,
       entries: {}
     }
 
@@ -57,10 +55,7 @@ class EntryEdit extends Component {
          element that is an empty string, not an empty array.
          Thus, if a value is an empty array, it means that the previous entries were never changed.
       */
-      // remove potential duplicates from array
-      store.dispatch(editEntryPool(this.state.entries, this.props.yr))
       store.dispatch(closeEntries())
-      console.log({[this.props.yr]: diff})
       fetch('api/updateentries', {
         method: 'POST',
         headers: {
@@ -70,7 +65,11 @@ class EntryEdit extends Component {
         },
         body: JSON.stringify({[this.props.yr]: diff})
       }).then(response => response.json())
-        .then({...json, status} => console.log(status ? 'Posted' : 'Unsuccessful'))
+        .then(({...json, dataStatus}) => {
+          store.dispatch(changeMsg(dataStatus))
+          if(dataStatus)
+            store.dispatch(editEntryPool(this.state.entries, this.props.yr))
+        })
     } else
       store.dispatch(openEntries())
   }

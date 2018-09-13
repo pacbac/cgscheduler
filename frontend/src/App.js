@@ -10,8 +10,8 @@ class App extends Component {
   componentDidMount(){
     fetch('api/get')
       .then(res => res.json())
-      .then(({...result, status}) => {
-        if(status){
+      .then(({...result, dataStatus}) => {
+        if(dataStatus){
           store.dispatch(setAjaxTable(result.tableEntries))
           store.dispatch(setAjaxPool(result.entriesPool))
         }

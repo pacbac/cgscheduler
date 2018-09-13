@@ -7,14 +7,14 @@ from .models import TableEdit, EntryEdit
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 def getData(request):
-    if request.method != 'GET': return HttpResponse({ 'status': False })
+    if request.method != 'GET': return HttpResponse({ 'dataStatus': False })
     thisYear = datetime.date.today().year
     tabs = [ str(thisYear+yr) for yr in range(-1, 2) ]
     response = {
         # key: date in mm/dd/yyyy, value: table edit db obj
         'tableEntries': {},
         'entriesPool': {},
-        'status': True
+        'dataStatus': True
     }
 
     entryCategories = ['place', 'moderator', 'children', 'youth']
@@ -49,9 +49,9 @@ def getData(request):
     return HttpResponse(json.dumps(response))
 
 def updateEdits(request):
-    if request.method != 'POST': return HttpResponse({ 'status': False })
+    if request.method != 'POST': return HttpResponse({ 'dataStatus': False })
     POST = QueryDict.dict(request.POST)
-    response = { 'status': True } # status = True means post was success
+    response = { 'dataStatus': True } # status = True means post was success
     for key in POST.keys():
         # splitKey is always in the form {0: 'edits', 1: 'yr', 2: 'dateIndex', 3: 'category'}
         splitKeys = tuple(key_utils.splitKey(key))
@@ -81,13 +81,13 @@ def updateEdits(request):
                 print(logStr)
         else:
             response[key] = "Error: Could not post to server due to improper formatting"
-            response['status'] = False
+            response['dataStatus'] = False
     return HttpResponse(json.dumps(response))
 
 def updateEntries(request):
-    if request.method != 'POST': return HttpResponse(json.dumps({ 'status': False }))
+    if request.method != 'POST': return HttpResponse(json.dumps({ 'dataStatus': False }))
     POST = json.loads(request.body.decode('utf-8'))
-    response = { 'status': True }
+    response = { 'dataStatus': True }
     for yr in POST.keys():
         for ctgry in POST[yr]:
             for name in POST[yr][ctgry]:
@@ -102,6 +102,6 @@ def updateEntries(request):
                         entry.delete()
                         print("Deleted object: (%s, %s, %s)" % (yr, ctgry, name))
                 else:
-                    response[key] = "Error: Could not post to server due to improper formatting"
-                    response['status'] = False
+                    response[yr][ctgry][name] = "Error: Could not post to server due to improper formatting"
+                    response['dataStatus'] = False
     return HttpResponse(json.dumps(response))

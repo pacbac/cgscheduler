@@ -38,7 +38,6 @@ class TextField extends Component {
         store.dispatch(editElem(this.state.content, this.props.position))
         store.dispatch(editAPITableElem(this.state.content, this.props.position))
       }
-    console.log(store.getState())
   }
 
   render(){

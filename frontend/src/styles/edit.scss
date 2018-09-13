@@ -17,17 +17,15 @@
   text-align: center;
 }
 
-.save-options {
-  flex-basis: 100%;
-  display: flex;
-  h3 {
-    width: 50%;
-    flex-grow: 1;
-    justify-content: flex-start;
-    font: {
-      family: Poppins;
-      size: 16px;
-    }
+h3 {
+  width: 50%;
+  flex-grow: 1;
+  justify-content: flex-start;
+  margin-bottom: 0;
+  color: $dark-green;
+  font: {
+    family: Poppins;
+    size: 16px;
   }
 }
 

@@ -29,8 +29,16 @@ export const closeEntries = () => ({ type: "CLOSE_ENTRIES" })
 
 export const changeTab = selectedYr => ({ type: "CHANGE_TAB", selectedYr })
 
+
 /* API RESPONSE ACTIONS */
 
 export const editAPITableElem = (text, location) => ({ type: "EDIT_API_TABLE_ELEM", text, location })
 
 export const editAPIPool = (pool, year) => ({ type: "EDIT_API_POOL", year, pool })
+
+
+/* H3 MESSAGE ACTIONS */
+
+export const changeMsg = dataStatus => ({ type: "CHANGE_MESSAGE", dataStatus })
+
+export const resetMsg = () => ({ type: "RESET_MESSAGE" })

@@ -5,6 +5,7 @@ import optionBtns from './OptionBtns.js'
 import tabs from './Tabs.js'
 import apiRequest from './APIRequest.js'
 import selectedElems from './selectedElems.js'
+import h3Message from './H3Message.js'
 
 export default combineReducers({
   tabs,
@@ -12,5 +13,6 @@ export default combineReducers({
   optionBtns,
   entriesPool,
   selectedElems,
-  apiRequest
+  apiRequest,
+  h3Message
 })
