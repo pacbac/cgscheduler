@@ -20,7 +20,6 @@ const Element = ({position, clicked, content}) => {
 
 class TableView extends Table {
   render(){
-    console.log(store.getState())
     return <div className="table">{this.getElements(Element)}</div>
   }
 }
