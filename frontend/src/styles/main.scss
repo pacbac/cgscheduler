@@ -146,14 +146,6 @@ h1.heading {
     color: rgba($dark-green, 0.25);
     width: 2px;
   }
-
-  &:nth-child(odd) {
-    background-color: $very-light-green;
-  }
-
-  &:nth-child(even) {
-    background-color: $very-light-green2;
-  }
 }
 
 footer {

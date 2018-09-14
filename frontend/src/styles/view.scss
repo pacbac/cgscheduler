@@ -4,7 +4,7 @@
 .hover {
   position: absolute;
   z-index: 1;
-  background-color: rgba(#f9ffed, 0.5);
+  background-color: #f9ffed;
   box-shadow: 1px 1px 10px $barely-black;
   color: black;
   border-radius: 5px;
@@ -15,6 +15,11 @@
   min-height: $row-height;
   padding: 8px;
   overflow-wrap: break-word;
+  text-transform: lowercase;
+
+  &:first-letter {
+    text-transform: uppercase;
+  }
 }
 
 /*

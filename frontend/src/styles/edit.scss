@@ -1,20 +1,31 @@
 @import 'abstracts';
 // SCSS for edits page only
 
-.element > input.edit-field { //textfields for entries into scheduler
-  @include border(solid, $textfld-border, 2px, 5px);
-  background-color: transparent;
-  position: relative;
-  width: 90%;
-  &:focus {
-    outline: none;
+.element {
+  // bc hover box does not exist as a sibling in edits page, the odd/even css is appropriate 
+  &:nth-child(odd) {
+    background-color: $very-light-green;
   }
-  font: {
-    family: Poppins;
-    size: 20px;
-    weight: 300;
+
+  &:nth-child(even) {
+    background-color: $very-light-green2;
   }
-  text-align: center;
+
+  > input.edit-field { //textfields for entries into scheduler
+    @include border(solid, $textfld-border, 2px, 5px);
+    background-color: transparent;
+    position: relative;
+    width: 90%;
+    &:focus {
+      outline: none;
+    }
+    font: {
+      family: Poppins;
+      size: 20px;
+      weight: 300;
+    }
+    text-align: center;
+  }
 }
 
 h3 {
