@@ -56,7 +56,7 @@ class EntryEdit extends Component {
          Thus, if a value is an empty array, it means that the previous entries were never changed.
       */
       store.dispatch(closeEntries())
-      fetch('api/updateentries', {
+      fetch('/api/updateentries', {
         method: 'POST',
         headers: {
           //'Accept': 'application/json',

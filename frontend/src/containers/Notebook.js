@@ -3,6 +3,7 @@ import TableEdit from './TableEdit.js'
 import EntryEdit from './EntryEdit.js'
 import { store } from '../store'
 import { resetMsg } from '../actions'
+import '../css/edit.css'
 
 class Notebook extends Component {
   timedMsg(msg){

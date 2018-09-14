@@ -1,5 +1,5 @@
-// SCSS for edits page
-@import 'main';
+@import 'abstracts';
+// SCSS for edits page only
 
 .element > input.edit-field { //textfields for entries into scheduler
   @include border(solid, $textfld-border, 2px, 5px);

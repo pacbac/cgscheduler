@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import './css/edit.css';
+import './css/main.css';
+import { Switch, Route } from 'react-router-dom'
 import Notebook from './containers/Notebook.js'
+import NotebookView from './containers/NotebookView.js'
 import { store } from './store'
 import { changeTab, setAjaxTable, setAjaxPool } from './actions'
 import { yrs } from './static-data'
@@ -8,7 +10,7 @@ import { yrs } from './static-data'
 class App extends Component {
 
   componentDidMount(){
-    fetch('api/get')
+    fetch('/api/get')
       .then(res => res.json())
       .then(({...result, dataStatus}) => {
         if(dataStatus){
@@ -20,7 +22,12 @@ class App extends Component {
   }
 
   render(){
-    let yrNotebooks = yrs.map(yr => <Notebook key={`${yr}-notebook`} yr={yr}/>)
+    let yrNotebooks = yrs.map(yr => (
+      <Switch>
+        <Route exact path="/" render={props => <NotebookView key={`${yr}-notebook`} yr={yr}/>}/>
+        <Route exact path="/edit/" render={props => <Notebook key={`${yr}-notebook`} yr={yr}/>}/>
+      </Switch>
+    ))
     return (
       <div className="center-content">
         <Tabs/>

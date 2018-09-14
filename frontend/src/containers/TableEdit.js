@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { categories, entryCategories } from '../static-data'
 import { store } from '../store'
+import Table from './Table.js'
 import {
   editElem,
   changeSelectedElem,
@@ -157,57 +158,10 @@ const Element = ({position, clicked, content}) => {
   )
 }
 
-class TableEdit extends Component {
-  constructor(props){
-    super(props)
-    this.clicked = this.clicked.bind(this)
-  }
-
-  // when an element gets clicked on
-  clicked(e){
-    //only applies to elements, not children inside elements
-    if(e.target.className === "element"){
-      let i = parseInt(e.target.getAttribute("i"))
-      let category = e.target.getAttribute("category")
-      let year = store.getState().tabs.selectedYr
-      store.dispatch(changeSelectedElem({year, i, category}))
-    }
-  }
-
-  getElements(){
-    let curTableEntries = store.getState().tableEntries
-    let elements = []
-    let renderCategories;
-
-    const arr24 = [...Array(24)] //a temporary 24-slot array for the 24 slots per category
-    // create a 2D array of the edits that contains JSX elements
-    renderCategories = categories.map(category => (
-      arr24.map((date, i) => {
-        const flattenedKey = [this.props.yr, i, category].join(", ")
-        const value = curTableEntries[flattenedKey] || ''
-        return (<Element key={[this.props.yr, i, category].join("_")}
-          position={{i, category, year: this.props.yr}}
-          clicked={this.clicked}
-          content={value}/>)
-      })
-    ))
-    // convert the renderCategories 2D array into a renderable 1D mapping array (with div wrappers)
-    for(let i = 0; i < categories.length; i++){
-      elements.push((
-        <div className={categories[i]}>
-          <div className="navbar">{categories[i]}</div>
-          <div className="info">
-            {renderCategories[i]}
-          </div>
-        </div>
-      ))
-    }
-    return elements
-  }
-
+class TableEdit extends Table {
   submit(e){
     console.log(store.getState())
-    fetch('api/updateedits', {
+    fetch('/api/updateedits', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -237,7 +191,7 @@ class TableEdit extends Component {
   render(){
     return (
       [<div className="table">
-        {this.getElements()}
+        {this.getElements(Element)}
       </div>,
       (store.getState().optionBtns.tableChanged ?
         (<div className="save-btns">
