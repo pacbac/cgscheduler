@@ -2,6 +2,24 @@ import React, { Component } from 'react';
 import { store } from '../store'
 import { categories } from '../static-data'
 import { changeSelectedElem } from '../actions'
+import TrackVisibility from 'react-on-screen'
+
+class TableLabel extends Component {
+  render() {
+    const { isVisible, label } = this.props
+    // fix position to top of screen when it goes offscreen
+    const style = isVisible ? {} : {
+      position: 'fixed',
+      top: 0,
+      zIndex: 2,
+      width: this.permLbl ? this.permLbl.offsetWidth : 0
+    }
+    return [
+      <div className="tbl-lbl" ref={elem => {this.permLbl = elem }}>{label}</div>,
+      !isVisible && <div className="tbl-lbl" style={style}>{label}</div>
+    ]
+  }
+}
 
 
 class Table extends Component {
@@ -38,7 +56,9 @@ class Table extends Component {
     for(let i = 0; i < categories.length; i++){
       elements.push((
         <div className={categories[i]}>
-          <div className="navbar">{categories[i]}</div>
+          <TrackVisibility>
+            <TableLabel label={categories[i]}/>
+          </TrackVisibility>
           <div className="info">
             {renderCategories[i]}
           </div>

@@ -6,10 +6,6 @@ const veryLightGreen = '#eaffee'
 const veryLightGreen2 = '#c9f2d0'
 
 class Element extends Component {
-  state = {
-    hoverWidth: 0
-  }
-
   render(){
     let {i, category, year} = this.props.position
     let { selectedElems: { selectedTblElem } } = store.getState()
