@@ -6,6 +6,10 @@ import json
 from .models import TableEdit, EntryEdit
 from django.views.decorators.csrf import ensure_csrf_cookie
 
+@ensure_csrf_cookie
+def loadPage(request):
+    return render(request, 'index.html', {})
+
 def getData(request):
     if request.method != 'GET': return HttpResponse({ 'dataStatus': False })
     thisYear = datetime.date.today().year
