@@ -18,7 +18,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "postinstall": "npm run build"
+    "postinstall": "npm run build-css && npm run build"
   },
   "engines": {
     "node": "9.9.0",
