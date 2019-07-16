@@ -29,10 +29,13 @@ class App extends Component {
       </Switch>
     ))
     return (
-      <div className="center-content">
-        <Tabs/>
-        {yrNotebooks}
-      </div>
+      <React.Fragment>
+        <h1 class="heading">Cell Group Schedule</h1>
+        <div className="center-content">
+          <Tabs/>
+          {yrNotebooks}
+        </div>
+      </React.Fragment>
     )
   }
 }
